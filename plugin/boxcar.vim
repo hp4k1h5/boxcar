@@ -1,4 +1,5 @@
-"=============================================================================
+""
+" =============================================================================
 " What Is This: boxcar
 " File: plugin/boxcar.vim
 " Author: bob <robertwalks@gmail.com>
@@ -8,3 +9,8 @@
 " Thanks:
 " ChangeLog:
 "     0.0  : init (2020/05/10)
+
+""
+" does this work?
+function GETDOC()
+endfunction

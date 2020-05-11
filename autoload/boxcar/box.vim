@@ -1,3 +1,4 @@
+"" 
 " TODO: replace me
 " ```
 "
@@ -23,7 +24,7 @@
 " if the shortest word was too long, it would error dynamically but compile to
 " a best fit approximation
 
-
+""
 " does this register ?
 function! boxcar#box#make()abort
   let l:cp = getcurpos()
@@ -58,6 +59,8 @@ function! s:get_block(cp, marker)
   return [l:st, l:en]
 endfunction
 
+""
+" gets boxes
 function! s:get_boxes(cp)abort
   echom "hi"
   " echom join(a:cp, ' ')
