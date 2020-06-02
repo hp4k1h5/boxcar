@@ -1,0 +1,22 @@
+~ Test make box
+
+=====================================
+
+Given (an empty code block):
+  ```
+
+  ```
+
+Execute (put cursor inside and make box):
+  call cursor(2, 1)
+  call boxcar#box#make()
+
+Expect(a box):
+  ```
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+
+  ```
+" Execute (expect cursor to be inside block):
+"   AssertEqual [3, 2], getpos('.')[1:2] 

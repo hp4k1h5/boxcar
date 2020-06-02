@@ -1,0 +1,17 @@
+~ Test get all boxes
+
+Given (a box in a block):
+  ```
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+
+  ```
+
+Execute (get_all boxes):
+  call cursor(2,3)
+  let b:r = boxcar#box#get_all(boxcar#block#get(getcurpos(), '```')[2])
+  " AssertEqual 1, len(b:r)
+  " AssertEqual 4, len(b:r[0])
+  Log b:r
+  AssertEqual 2, b:r
