@@ -60,32 +60,51 @@ function s:get_corners(block)
     " let unibox = ['━','┃','┏','┓','┗','┛']
   
     " find connected top-right or throw
-    let l:ci = tl[1]
-    for c in a:block[tl[0]][tl[1]:]
+    let l:ci = tl[1] + 1
+    " iterate over chars in line from tl corner
+    for c in split(a:block[tl[0]], '\zs')[l:ci:]
       if c ==# '┓'
         " add top-left and top-right to maybe_box
         call extend(l:maybe_box, [tl, [tl[0], l:ci]])
         break
       elseif c !=# '━'
-        throw 'disconnected top'
+        throw 'disconnected top right: '.c.' .. x-index: '.l:ci
       endif
       " next char
       let l:ci += 1
     endfor
 
-    "find connected bottom-left or throw
-    let l:blyi
-    for l in a:block
-      if l[tl[1]] ==# '┗'
+    " find connected bottom-left or throw
+    let l:blyi = tl[0] + 1
+    for l in a:block[l:blyi:]
+      let l:c = split(l, '\zs')[tl[1]]
+      if l:c ==# '┗'
         " add bottom-leftto maybe_box
         call add(l:maybe_box, [l:blyi, tl[1]])
         break
-      elseif l[tl[1]] !=# '┃'
-
+      elseif l:c !=# '┃'
+        throw 'disconnected bottom left: '.l:c.' .. y-index: '.l:blyi
       endif
+
+      " next line
       let l:blyi += 1
     endfor
 
+    " find connected bottom-right or throw
+    let l:ci = tl[1] + 1
+    for c in split(a:block[l:blyi], '\zs')[l:ci:]
+      if c ==# '┛' 
+        call add(l:maybe_box, [l:blyi, l:ci])
+        break
+      elseif c !=# '━'
+        throw 'disconnected bottom right'
+      endif
+
+      " next char
+      let l:ci += 1
+    endfor
+
+    " todo check tr -br connection
     " add box to corners
     call add(l:corners, l:maybe_box)
   endfor
@@ -99,7 +118,8 @@ function s:get_tls(block)
   let l:li = 0
   for l in a:block
     let l:ci = 0
-    for c in l
+    " split each string on char
+    for c in split(l, '\zs')
       if c ==# '┏'
         call add(l:tls, [l:li, l:ci])
       endif
