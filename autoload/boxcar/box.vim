@@ -37,7 +37,7 @@ function! boxcar#box#make()abort
   execute 'normal! a'
 endfunction
 
-function! boxcar#box#resize()
+function! boxcar#box#resize(y, x)
   try
     let [l:start, l:end, l:block] = boxcar#block#get(getcurpos(), '```')
   catch
@@ -54,14 +54,15 @@ function! boxcar#box#resize()
   endtry
 
   let l:keypress = getchar(0)
-  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], 0, 1)
+  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x)
 endfunction
 
 function! boxcar#box#inc(block, start, end, box, y, x)
 
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
-  let l:newline = '┃'. repeat(' ', a:box[1][1] - a:box[0][1]).'┃'
+  let l:newline = repeat(' ', a:box[0][1]).'┃'. 
+        \ repeat(' ', a:box[1][1] - (a:box[0][1] + 1) + a:x).'┃'
 
   let l:box_start_y = a:start + a:box[0][0] 
   let l:box_end_y = a:start + a:box[2][0]
@@ -92,11 +93,19 @@ function! boxcar#box#inc(block, start, end, box, y, x)
         \ split(a:block[a:box[2][0]], '\zs'), 
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
+
+  let l:i = a:y
+  while l:i
+    call append(getcurpos()[1], l:newline)
+    " next newline
+    let l:i -= 1
+  endwhile
 endfunction
+
 
 function! box#dec(box, y, x)
-
 endfunction
+
 
 " get box corners
 function s:get_corners(block)

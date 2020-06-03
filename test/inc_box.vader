@@ -12,7 +12,7 @@ Execute (put cursor in box and inc):
   call cursor(3,4)
   AssertEqual getline(3), getline('.')
   AssertEqual getpos('.'), [0,3,4,0]
-  call boxcar#box#resize()
+  call boxcar#box#resize(0, 1)
 
 Expect (a bigger box):
   ```
@@ -35,7 +35,7 @@ Execute (put cursor in box and inc):
   call cursor(4,4)
   AssertEqual getline(4), getline('.')
   AssertEqual getpos('.'), [0,4,4,0]
-  call boxcar#box#resize()
+  call boxcar#box#resize(0, 1)
 
 Expect (a bigger box):
   ```
@@ -59,7 +59,7 @@ Execute (put cursor in box and inc):
   call cursor(4,11)
   AssertEqual getline(4), getline('.')
   AssertEqual getpos('.'), [0,4,11,0]
-  call boxcar#box#resize()
+  call boxcar#box#resize(0, 1)
 
 Expect (an even bigger box in the right place):
   ```
@@ -68,3 +68,63 @@ Expect (an even bigger box in the right place):
         ┃   ┃
         ┗━━━┛
   ```
+
+
+=============================
+Given (a bigger box):
+  ```
+      ┏━━┓
+      ┃  ┃
+      ┃  ┃
+      ┃  ┃
+      ┗━━┛
+  ```
+
+Execute (put cursor in box and inc by more than 1):
+  AssertEqual getpos('.'), [0,1,1,0]
+  call cursor(4,8)
+  AssertEqual getline(4), getline('.')
+  AssertEqual getpos('.'), [0,4,8,0]
+  call boxcar#box#resize(0, 9)
+
+Expect (an even bigger box in the right place):
+  ```
+      ┏━━━━━━━━━━━┓
+      ┃           ┃
+      ┃           ┃
+      ┃           ┃
+      ┗━━━━━━━━━━━┛
+  ```
+
+
+
+=============================
+Given (a bigger box):
+  ```
+  
+      ┏━━━━━━━━━┓
+      ┃ abc     ┃
+      ┃      xyw┃
+      ┗━━━━━━━━━┛
+  
+  ```
+
+Execute (put cursor in box and inc by more than 1):
+  AssertEqual getpos('.'), [0,1,1,0]
+  call cursor(5,16)
+  AssertEqual getline(5), getline('.')
+  AssertEqual getpos('.'), [0,5,16,0]
+  call boxcar#box#resize(1, 9)
+  AssertEqual getpos('.'), [0,5,16,0]
+
+Expect (an even bigger box in the right place):
+  ```
+  
+      ┏━━━━━━━━━━━━━━━━━━┓
+      ┃ abc              ┃
+      ┃      xyw         ┃
+      ┃                  ┃
+      ┗━━━━━━━━━━━━━━━━━━┛
+  
+  ```
+
