@@ -1,0 +1,22 @@
+~ test increment box
+
+Given (a box):
+  ```
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+  ```
+
+Execute (put cursor in box and inc):
+  AssertEqual getpos('.'), [0,1,1,0]
+  call cursor(3,4)
+  AssertEqual getline(3), getline('.')
+  AssertEqual getpos('.'), [0,3,4,0]
+  call boxcar#box#resize()
+
+Expect (a bigger box):
+  ```
+  ┏━━┓
+  ┃  ┃
+  ┗━━┛
+  ```

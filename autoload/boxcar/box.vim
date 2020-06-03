@@ -47,14 +47,14 @@ function! boxcar#box#resize()
 
   try
     let l:corners = s:get_corners(l:block)
-    let l:cur_box = s:in_box(l:corners)
+    let l:cur_box_ind = s:in_box(l:corners)
   catch
     echoerr v:exception.'::'.v:throwpoint
     return 1
   endtry
 
   let l:keypress = getchar(0)
-  call boxcar#box#inc(l:block, l:start, l:end, l:cur_box, 0, 1)
+  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], 0, 1)
 endfunction
 
 function! boxcar#box#inc(block, start, end, box, y, x)
@@ -62,31 +62,35 @@ function! boxcar#box#inc(block, start, end, box, y, x)
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
   let l:newline = '┃'. repeat(' ', a:box[1][1] - a:box[0][1]).'┃'
-  " extend top border
-  call setline(a:start,
+  let l:box_start_y = a:start + a:box[0][0] 
+  let l:box_end_y = l:box_start_y + a:box[2][0] - 1
+  let l:box_end_x = a:box[1][1]
+
+  " extend top border, off by is from array-to-page mapping
+  call setline(l:box_start_y,
         \ join(extend( 
-        \ split(a:block[a:start], '\zs'), 
+        \ split(a:block[1], '\zs'), 
         \ split(l:border_x, '\zs'), 
-        \ a:box[1][1]-1), ''))
+        \ l:box_end_x), ''))
 
   " extend content area
-  let l:i = a:start+1
-  for l in a:block[a:start+1: a:end-1]
+  let l:i = l:box_start_y + 1
+  for l in a:block[2: -3]
     call setline(l:i,
         \ join(extend( 
         \ split(l, '\zs'), 
         \ split(l:blank_x, '\zs'), 
-        \ a:box[1][1]-1), ''))
+        \ l:box_end_x), ''))
     " next line
     let l:i += 1
   endfor
 
   " set bottom border
-  call setline(a:end,
+  call setline(l:box_end_y,
         \ join(extend( 
-        \ split(a:block[a:end], '\zs'), 
+        \ split(a:block[-2], '\zs'), 
         \ split(l:border_x, '\zs'), 
-        \ a:box[1][1]-1), ''))
+        \ l:box_end_x), ''))
 endfunction
 
 function! box#dec(box, y, x)
@@ -188,7 +192,6 @@ function s:in_box(boxes)
   let l:x = l:cp[4]-1
   let l:i = 0
   for b in a:boxes
-    echom join(b, ' ')
     if l:y > b[0][0] && l:y < b[3][0]
           \ && l:x > b[0][1] && l:x < b[1][1]
       return l:i
@@ -196,6 +199,5 @@ function s:in_box(boxes)
     let l:i += 1
   endfor
 
-  echom join(a:boxes[0],' ')
   throw 'cursor '.l:y.':'.l:x.'not in box'
 endfunction
