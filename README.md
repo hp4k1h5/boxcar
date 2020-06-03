@@ -1,8 +1,9 @@
 # boxcar
 > boxes around text in vim !
 ### ! experimental and unstable
-still very experimental and liable to have odd behaviors and [bugs](#bugs). please see
-[CONTRIBUTING](CONTRIBUTING.md) if you would like to help improve this plugin.
+still very experimental and liable to have odd behaviors and [bugs](#bugs).
+please see [CONTRIBUTING](CONTRIBUTING.md) if you would like to help improve
+this plugin.
 
 a vim plugin to get configurable text boxes around text as you type
 ![4 boxes around text](img/boxes.png)
@@ -10,15 +11,22 @@ a vim plugin to get configurable text boxes around text as you type
 ### usage
 please forgive the lack of documentation anywhere. hopefully v0.1 will have
 more explanation. in the meantime, the basic idea is to call `:BoxcarMake`
-and then either resize the box with e.g. `:BoxcarResize 3 3 1` with your
-cursor inside the box you desire to expand, or `:BoxcarOn` and then start
-typing inside a box.
+inside a markdown code-block i.e. inside a code-fence of three back-ticks.  
+__Ex:__
 
-If you resize a box to your expeceted desired size, you can type inside of it
-with 'Replace mode', by e.g. typing `R` in normal mode. Otherwise `BoxcarOn`
-allows you to grow a box as large as you like as you type. current behavior is
-not smart enough to handle multiline yet, so its a bit of a manual process, of
-`BoxcarResize` and 'Replace mode'.
+\```  
+_call :BoxcarMake from here_  
+\```  
+
+and then either resize the box with e.g. `:BoxcarResize 3 3 0` with your
+cursor inside the box, or call `:BoxcarOn` and then start
+typing inside a box in insert mode.
+
+If you first resize a box to your desired size, you can type inside of it with
+'Replace mode', by e.g. typing `R` in normal mode. Otherwise `BoxcarOn` allows
+you to grow a box as large as you like, as you type. current behavior is not
+smart enough to handle multiline yet, so its a bit of a manual process, of
+`BoxcarResize 1 0 0` and 'Replace mode'.
 
 For now, the only way to get side-by-side boxes is with `<Ctrl-v><motions>y
 ....` and pasting the box where you would like.
