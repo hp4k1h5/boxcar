@@ -10,7 +10,23 @@
 " ChangeLog:
 "     0.0  : init (2020/05/10)
 
-""
-" does this work?
-function GETDOC()
+command -nargs=? BoxcarOn call boxcar#on()
+command -nargs=? BoxcarOff call boxcar#off()
+command -nargs=? BoxcarMake call boxcar#box#make()
+command -nargs=? BoxcarResize call boxcar#box#resize(<f-args>)
+
+function! boxcar#on()
+  if !exists('#Boxcar#InsertCharPre')
+    autocmd!
+    augroup Boxcar
+      autocmd!
+      autocmd InsertCharPre *  call boxcar#box#resize(0, 1)
+    augroup END
+  endif
+endfunction
+
+function! boxcar#off()
+  augroup Boxcar
+    autocmd!
+  augroup END
 endfunction

@@ -211,5 +211,3 @@ function s:in_box(boxes)
 
   throw 'cursor '.l:y.':'.l:x.'not in box'
 endfunction
-
-au InsertCharPre * call boxcar#box#resize()
