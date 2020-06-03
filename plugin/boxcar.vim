@@ -4,12 +4,12 @@
 " File: plugin/boxcar.vim
 " Author: bob <robertwalks@gmail.com>
 " Last Change: 2020/06/03
-" Version: v0.1
+" Version: v0.0_1
 " Help: see README.md and doc/boxcar.txt
 " Thanks:
 " ChangeLog:
 "     0.0  : init (2020/05/10)
-"     0.1  : init (2020/06/03)
+"     0.0_1  : init (2020/06/03)
 
 command -nargs=? BoxcarOn call boxcar#on()
 command -nargs=? BoxcarOff call boxcar#off()
