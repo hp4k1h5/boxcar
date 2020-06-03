@@ -21,6 +21,7 @@ function s:box_time()
 endfunction
 
 function! boxcar#on()
+  echom '🚂🚃🚃'
   if !exists('#Boxcar#InsertCharPre')
     autocmd!
     augroup Boxcar
@@ -31,6 +32,7 @@ function! boxcar#on()
 endfunction
 
 function! boxcar#off()
+  echom '🚥🚉'
   augroup Boxcar
     autocmd!
   augroup END
