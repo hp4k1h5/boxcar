@@ -2,7 +2,7 @@
 > boxes around text in vim !
 ### ! experimental and unstable
 still very experimental and liable to have odd behaviors and [bugs](#bugs).
-please see [CONTRIBUTING](CONTRIBUTING.md) if you would like to help improve
+please see [CONTRIBUTING](.github/CONTRIBUTING.md) if you would like to help improve
 this plugin.
 
 a vim plugin to get configurable text boxes around text as you type
