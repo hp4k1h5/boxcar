@@ -62,20 +62,21 @@ function! boxcar#box#inc(block, start, end, box, y, x)
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
   let l:newline = '┃'. repeat(' ', a:box[1][1] - a:box[0][1]).'┃'
+
   let l:box_start_y = a:start + a:box[0][0] 
-  let l:box_end_y = l:box_start_y + a:box[2][0] - 1
+  let l:box_end_y = a:start + a:box[2][0]
   let l:box_end_x = a:box[1][1]
 
   " extend top border, off by is from array-to-page mapping
   call setline(l:box_start_y,
         \ join(extend( 
-        \ split(a:block[1], '\zs'), 
+        \ split(a:block[a:box[0][0]], '\zs'), 
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
   " extend content area
   let l:i = l:box_start_y + 1
-  for l in a:block[2: -3]
+  for l in a:block[a:box[0][0]+1: a:box[2][0]]
     call setline(l:i,
         \ join(extend( 
         \ split(l, '\zs'), 
@@ -88,7 +89,7 @@ function! boxcar#box#inc(block, start, end, box, y, x)
   " set bottom border
   call setline(l:box_end_y,
         \ join(extend( 
-        \ split(a:block[-2], '\zs'), 
+        \ split(a:block[a:box[2][0]], '\zs'), 
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 endfunction
@@ -201,3 +202,5 @@ function s:in_box(boxes)
 
   throw 'cursor '.l:y.':'.l:x.'not in box'
 endfunction
+
+au InsertCharPre * call boxcar#box#resize()

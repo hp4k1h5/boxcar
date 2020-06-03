@@ -20,3 +20,30 @@ Expect (a bigger box):
   ┃  ┃
   ┗━━┛
   ```
+
+~ test increment box
+
+Given (a box):
+  ```
+  
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+
+  ```
+
+Execute (put cursor in box and inc):
+  AssertEqual getpos('.'), [0,1,1,0]
+  call cursor(4,4)
+  AssertEqual getline(4), getline('.')
+  AssertEqual getpos('.'), [0,4,4,0]
+  call boxcar#box#resize()
+
+Expect (a bigger box):
+  ```
+  
+  ┏━━┓
+  ┃  ┃
+  ┗━━┛
+
+  ```
