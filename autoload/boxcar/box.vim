@@ -37,7 +37,7 @@ function! boxcar#box#make()abort
   execute 'normal! a'
 endfunction
 
-function! boxcar#box#resize(y, x)
+function! boxcar#box#resize(y, x, live)
   try
     let [l:start, l:end, l:block] = boxcar#block#get(getcurpos(), '```')
   catch
@@ -54,7 +54,7 @@ function! boxcar#box#resize(y, x)
   endtry
 
   let l:keypress = getchar(0)
-  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, 1)
+  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, a:live)
 endfunction
 
 function! boxcar#box#inc(block, start, end, box, y, x, live)

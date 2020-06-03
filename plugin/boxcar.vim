@@ -17,7 +17,7 @@ command -nargs=? BoxcarMake call boxcar#box#make()
 command -nargs=? BoxcarResize call boxcar#box#resize(<f-args>)
 
 function s:box_time()
-  call timer_start(0, {-> boxcar#box#resize(0,1)})
+  call timer_start(0, {-> boxcar#box#resize(0,1,1)})
 endfunction
 
 function! boxcar#on()
