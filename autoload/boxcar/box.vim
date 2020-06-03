@@ -37,14 +37,63 @@ function! boxcar#box#make()abort
   execute 'normal! a'
 endfunction
 
-""
-" @public
-" find all boxes inside code {block}, a list of lines inside a code fence
-function! boxcar#box#get_all(block)
-  let l:corners = s:get_corners(a:block)
-  return l:corners
+function! boxcar#box#resize()
+  try
+    let [l:start, l:end, l:block] = boxcar#block#get(getcurpos(), '```')
+  catch
+    echoerr v:exception
+    return 1
+  endtry
+
+  try
+    let l:corners = s:get_corners(l:block)
+    let l:cur_box = s:in_box(l:corners)
+  catch
+    echoerr v:exception.'::'.v:throwpoint
+    return 1
+  endtry
+
+  let l:keypress = getchar(0)
+  call boxcar#box#inc(l:block, l:start, l:end, l:cur_box, 0, 1)
 endfunction
 
+function! boxcar#box#inc(block, start, end, box, y, x)
+
+  let l:border_x = repeat('━', a:x)
+  let l:blank_x = repeat(' ', a:x)
+  let l:newline = '┃'. repeat(' ', a:box[1][1] - a:box[0][1]).'┃'
+  " extend top border
+  call setline(a:start,
+        \ join(extend( 
+        \ split(a:block[a:start], '\zs'), 
+        \ split(l:border_x, '\zs'), 
+        \ a:box[1][1]-1), ''))
+
+  " extend content area
+  let l:i = a:start+1
+  for l in a:block[a:start+1: a:end-1]
+    call setline(l:i,
+        \ join(extend( 
+        \ split(l, '\zs'), 
+        \ split(l:blank_x, '\zs'), 
+        \ a:box[1][1]-1), ''))
+    " next line
+    let l:i += 1
+  endfor
+
+  " set bottom border
+  call setline(a:end,
+        \ join(extend( 
+        \ split(a:block[a:end], '\zs'), 
+        \ split(l:border_x, '\zs'), 
+        \ a:box[1][1]-1), ''))
+endfunction
+
+function! box#dec(box, y, x)
+
+endfunction
+
+" get box corners
 function s:get_corners(block)
   let l:corners = []
   let l:i = 0
@@ -128,4 +177,25 @@ function s:get_tls(block)
     let l:li += 1
   endfor
   return l:tls
+endfunction
+
+" returns the index of the {boxes} list the cursor is in or -1 if the cursor
+" is not inside one
+function s:in_box(boxes)
+
+  let l:cp = getcurpos()
+  let l:y = l:cp[1]-1
+  let l:x = l:cp[4]-1
+  let l:i = 0
+  for b in a:boxes
+    echom join(b, ' ')
+    if l:y > b[0][0] && l:y < b[3][0]
+          \ && l:x > b[0][1] && l:x < b[1][1]
+      return l:i
+    endif
+    let l:i += 1
+  endfor
+
+  echom join(a:boxes[0],' ')
+  throw 'cursor '.l:y.':'.l:x.'not in box'
 endfunction

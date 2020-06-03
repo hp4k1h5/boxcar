@@ -14,5 +14,6 @@ Execute (get_all boxes):
   let b:a = boxcar#box#get_all(b:block)
   " return should be doubly nested, a list of lists of a list of y, x
   " coordinate pairs
-  AssertEqual [[[1, 0], [1, 2], [3, 0], [3, 2]]], b:a
+  " AssertEqual [[[1, 0], [1, 2], [3, 0], [3, 2]]], b:a
+  AssertEqual [[1, 0], [1, 2], [3, 0], [3, 2]], b:a
 
