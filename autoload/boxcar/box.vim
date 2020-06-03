@@ -54,11 +54,11 @@ function! boxcar#box#resize(y, x)
   endtry
 
   let l:keypress = getchar(0)
-  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x)
+  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, 1)
 endfunction
 
-function! boxcar#box#inc(block, start, end, box, y, x)
-
+function! boxcar#box#inc(block, start, end, box, y, x, live)
+  let l:cp = getpos('.')
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
   let l:newline = repeat(' ', a:box[0][1]).'┃'. 
@@ -81,7 +81,7 @@ function! boxcar#box#inc(block, start, end, box, y, x)
     call setline(l:i,
         \ join(extend( 
         \ split(l, '\zs'), 
-        \ split(l:blank_x, '\zs'), 
+        \ l:i == l:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
         \ l:box_end_x), ''))
     " next line
     let l:i += 1
