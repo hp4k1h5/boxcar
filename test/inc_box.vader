@@ -21,9 +21,7 @@ Expect (a bigger box):
   ┗━━┛
   ```
 
-~ test increment box
-
-Given (a box):
+Given (a box and newlines):
   ```
   
   ┏━┓
@@ -46,4 +44,27 @@ Expect (a bigger box):
   ┃  ┃
   ┗━━┛
 
+  ```
+
+Given (a bigger box):
+  ```
+  
+        ┏━━┓
+        ┃  ┃
+        ┗━━┛
+  ```
+
+Execute (put cursor in box and inc):
+  AssertEqual getpos('.'), [0,1,1,0]
+  call cursor(4,11)
+  AssertEqual getline(4), getline('.')
+  AssertEqual getpos('.'), [0,4,11,0]
+  call boxcar#box#resize()
+
+Expect (an even bigger box in the right place):
+  ```
+  
+        ┏━━━┓
+        ┃   ┃
+        ┗━━━┛
   ```
