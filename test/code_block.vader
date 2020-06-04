@@ -10,9 +10,9 @@ Given (a code block):
    
   ```
 
-Execute (call cursor outside of block, get_code_block):
+Execute (call cursor outside of block, get error):
   call cursor(1,1)
-  AssertThrows call boxcar#block#get(getcurpos(), '```')
+  AssertThrows call boxcar#block#get(getpos('.')[1], '```')
   AssertEqual g:vader_exception, 'cursor is not inside a ``` code fence'
 
 ========================================
@@ -25,43 +25,21 @@ Given (a code block):
   ```
 
 Execute (call cursor inside, get_code_block):
+  " put cursor in middle
   call cursor(2,1)
-  let b:r = boxcar#block#get(getcurpos(), '```')
+  let b:r = boxcar#block#get(getpos('.')[1], '```')
   AssertEqual 3, len(b:r)
   AssertEqual [1, 5], b:r[0:1]
   " assert the third item is a list
   AssertEqual 3, type(b:r[2])
 
-Execute (call cursor to top, get_code_block):
+
+Execute (call cursor to top, get_code_block, expect it to throw):
   " put cursor on top fence
   call cursor(1,3)
-  let b:r = boxcar#block#get(getcurpos(), '```')
+  AssertThrows = boxcar#block#get(getpos('.')[1], '```')
 
-  " should have the same results
-  AssertEqual 3, len(b:r)
-  AssertEqual [1, 5], b:r[0:1]
-  " assert the third item is a list
-  AssertEqual 3, type(b:r[2])
 
-Execute (call cursor to bottom, get_code_block):
-  " throws for now, eventually might want to handle this case too
+Execute (call cursor to bottom, get_code_block, expect it to throw):
   call cursor(5,2)
-  AssertThrows = boxcar#block#get(getcurpos(), '```')
-
-  " should have the same results
-  " AssertEqual 3, len(b:r)
-  " AssertEqual [1, 5], b:r[0:1]
-  " " assert the third item is a list
-  " AssertEqual 3, type(b:r[2])
-
-
-========================================
-
-Given (an empty codeblock):
-  ```
-  ```
-
-Execute (get_code_block):
-  call cursor(1,1)
-  let b:r = boxcar#block#get(getcurpos(), '```')
-  AssertEqual [1, 2], b:r[0:1]
+  AssertThrows = boxcar#block#get(getpos('.')[1], '```')

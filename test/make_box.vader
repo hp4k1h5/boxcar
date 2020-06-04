@@ -11,7 +11,7 @@ Execute (put cursor inside and make box):
   call cursor(2, 1)
   call boxcar#box#make()
 
-Expect(a box):
+Expect (a box):
   ```
   ┏━┓
   ┃ ┃
@@ -20,3 +20,36 @@ Expect(a box):
   ```
 " Execute (expect cursor to be inside block):
 "   AssertEqual [3, 2], getpos('.')[1:2] 
+
+
+=====================================
+
+Given (an empty code block):
+  ```
+  
+  ```
+
+Execute (put cursor on top fence and expect error state):
+  call cursor(1, 1)
+  AssertThrows boxcar#box#make()
+
+Expect (no box):
+  ```
+  
+  ```
+
+
+=====================================
+
+Execute (call cursor to the right):
+  call cursor(2, 6)
+  call boxcar#box#make()
+
+Expect (a box to the right):
+  ```
+        ┏━┓
+        ┃ ┃
+        ┗━┛
+
+  ```
+

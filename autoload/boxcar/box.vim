@@ -1,20 +1,43 @@
 ""
 " @public
-" Create a unicode box whose top-left corner will be under the cursor. Must be
-" called inside a code-fence. See @function(boxcar#block#get).
+" Create a 3x3 unicode box putting the top-left corner under the cursor's
+" current position. The cursor will be placed inside the box.
+" Ex: 
+" >
+" ```
+"   ┏━┓
+"   ┃ ┃
+"   ┗━┛
+" ```
+" <
+" Must be called inside a code-fence. See @function(boxcar#block#get).
 function! boxcar#box#make()
 
-  let l:line_nr = getpos('.')[1]
+  " get code-block
+  let [l:line_nr, l:str_ind] = getpos('.')[1:2]
   try
     let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
     echoerr v:exception
+  endtry
+
+  " get other boxes
+  try
+    let l:corners = s:get_corners(l:block)
+  catch
+    echoerr v:exception.'::'.v:throwpoint
     return 1
   endtry
 
-  call append(l:line_nr[1]-1, ['┏━┓','┃ ┃','┗━┛'])
+  " if in a box throw
+  let l:cur_box_ind = s:in_box(l:corners)
+  if l:cur_box_ind != -1
+    throw 'cannot put box in box'
+  endif
+
+  call append(l:line_nr-1, ['┏━┓','┃ ┃','┗━┛'])
   " these numbers seem off
-  call cursor(l:line_nr[1]+1, 4)
+  call cursor(l:line_nr+1, 4)
 
   " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
   " execute 'normal! a'
@@ -28,15 +51,17 @@ function! boxcar#box#resize(y, x, live)
     return 1
   endtry
 
-  try
-    let l:corners = s:get_corners(l:block)
-    let l:cur_box_ind = s:in_box(l:corners)
-  catch
-    echoerr v:exception.'::'.v:throwpoint
+  let l:corners = s:get_corners(l:block)
+  if ! len(l:corners)
+    echoerr 'no top-left corners'
     return 1
-  endtry
+  endif
 
-  let l:keypress = getchar(0)
+  let l:cur_box_ind = s:in_box(l:corners)
+  if l:cur_box_ind == -1
+    throw 'cursor '.l:y.':'.l:x.'not in box'
+  endif
+
   call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, a:live)
 endfunction
 
@@ -97,7 +122,7 @@ function s:get_corners(block)
 
   let l:tls = s:get_tls(a:block)
   if ! len(l:tls)
-    throw 'no top-left corners'
+    return l:tls
   endif
 
   " iterate over corners and check each for full box
@@ -192,5 +217,5 @@ function s:in_box(boxes)
     let l:i += 1
   endfor
 
-  throw 'cursor '.l:y.':'.l:x.'not in box'
+  return -1
 endfunction
