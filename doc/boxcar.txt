@@ -11,11 +11,26 @@ FUNCTIONS                                                   *boxcar-functions*
 boxcar#block#get({line_nr}, {markers})                    *boxcar#block#get()*
   Get start and end lines of the code-block surrounding {line_nr}. Code block
   is composed of lines inside of a code-fence, composed of two {markers}.
-  Default marker is the standard markdown ``` three backticks.
+  Default marker is the standard markdown ``` three backticks. Cursor must be
+  **between** code-block markers, not on either. Throws if not inside.
 
 boxcar#box#make()                                          *boxcar#box#make()*
-  Create a unicode box whose top-left corner will be under the cursor. Must be
-  called inside a code-fence. See |boxcar#block#get()|.
+  Create a 3x3 unicode box, putting the top-left corner under the cursor's
+  current position. The cursor will be placed inside the box. Ex:
+>
+    ```                          ```
+    █ <━━━━┓                     ┏━┓
+    ```    ┃              ┏━━━>  ┃█┃ ...cursor is inside box
+    with cursor here      ┃      ┗━┛
+     call :BoxcarMake ━━━━┛      ```
+<
+  Must be called inside a code-fence; see |boxcar#block#get()|.
+
+boxcar#box#resize({y}, {x}, {live})                      *boxcar#box#resize()*
+  Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
+  true, the line under edit will not be padded out, to accomodate the newly
+  inserted char. The y and x values are added from the cursor's current
+  position. currently only works with positive numbers.
 
 
 vim:tw=78:ts=8:ft=help:norl:

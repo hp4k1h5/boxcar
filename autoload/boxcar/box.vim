@@ -1,16 +1,16 @@
 ""
 " @public
-" Create a 3x3 unicode box putting the top-left corner under the cursor's
+" Create a 3x3 unicode box, putting the top-left corner under the cursor's
 " current position. The cursor will be placed inside the box.
 " Ex: 
 " >
-" ```
-"   ┏━┓
-"   ┃ ┃
-"   ┗━┛
-" ```
+"   ```                          ```
+"   █ <━━━━┓                     ┏━┓
+"   ```    ┃              ┏━━━>  ┃█┃ ...cursor is inside box
+"   with cursor here      ┃      ┗━┛
+"    call :BoxcarMake ━━━━┛      ```
 " <
-" Must be called inside a code-fence. See @function(boxcar#block#get).
+" Must be called inside a code-fence; see @function(boxcar#block#get).
 function! boxcar#box#make()
 
   " get code-block
@@ -43,11 +43,24 @@ function! boxcar#box#make()
   " execute 'normal! a'
 endfunction
 
+
+""
+" @public
+" Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
+" true, the line under edit will not be padded out, to accomodate the newly
+" inserted char. The y and x values are added from the cursor's current
+" position. currently only works with positive numbers.
 function! boxcar#box#resize(y, x, live)
+
+  if a:y < 0 || a:x < 0 || a:live < 0 || a:live > 1
+    throw 'bad arguments supplied please see docs'
+  endif
+
+  let l:cp = getpos('.')
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(getpos('.'), '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(l:cp[1], '```')
   catch
-    echoerr v:exception
+    echoerr join(v:exception, '::')
     return 1
   endtry
 
@@ -59,37 +72,44 @@ function! boxcar#box#resize(y, x, live)
 
   let l:cur_box_ind = s:in_box(l:corners)
   if l:cur_box_ind == -1
-    throw 'cursor '.l:y.':'.l:x.'not in box'
+    echoerr 'cursor '.l:y.':'.l:x.'not in box'
+    return 1
   endif
 
-  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, a:live)
+  call s:increment(l:block, l:start, l:cp, l:corners[l:cur_box_ind], a:y, a:x, a:live)
 endfunction
 
-function! boxcar#box#inc(block, start, end, box, y, x, live)
-  let l:cp = getpos('.')
+
+" add empty rows {y} and columns {x} to a {box} beginning at cursor
+" location {cp}. If {live} is true, skip line extension for cp[1].
+function s:increment(block, start, cp, box, y, x, live)
+
+  " set box elements
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
   let l:newline = repeat(' ', a:box[0][1]).'┃'. 
         \ repeat(' ', a:box[1][1] - (a:box[0][1] + 1) + a:x).'┃'
 
+  " set constants
   let l:box_start_y = a:start + a:box[0][0] 
   let l:box_end_y = a:start + a:box[2][0]
   let l:box_end_x = a:box[1][1]
 
-  " extend top border, off by is from array-to-page mapping
+  " extend top border
   call setline(l:box_start_y,
         \ join(extend( 
         \ split(a:block[a:box[0][0]], '\zs'), 
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
-  " extend content area
+  " extend content area, off-by is from array-to-page mapping. Skip extension
+  " when typing live, as character input will extend line by itself 
   let l:i = l:box_start_y + 1
   for l in a:block[a:box[0][0]+1: a:box[2][0]]
     call setline(l:i,
         \ join(extend( 
         \ split(l, '\zs'), 
-        \ l:i == l:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
+        \ l:i == a:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
         \ l:box_end_x), ''))
     " next line
     let l:i += 1
@@ -102,6 +122,7 @@ function! boxcar#box#inc(block, start, end, box, y, x, live)
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
+  " add y values !! wip
   let l:i = a:y
   while l:i
     call append(getcurpos()[1], l:newline)
@@ -111,11 +132,14 @@ function! boxcar#box#inc(block, start, end, box, y, x, live)
 endfunction
 
 
-function! box#dec(box, y, x)
+" remove rows {y} and columns {x} from {box}
+function! s:decrement(box, y, x)
 endfunction
 
 
-" get box corners
+" Returns a list of box corners inside {block}. Each returned box has 4
+" corners in the following order [tl, tr, bl, br]. Each corner is a list of
+" [y, x] zero-indexed pairs, relative to the {block}, not the page.
 function s:get_corners(block)
   let l:corners = []
   let l:i = 0
@@ -183,7 +207,8 @@ function s:get_corners(block)
   return l:corners
 endfunction
 
-" returns [y,x] coordinate pairs of all top-left corners in {block}
+
+" Returns a list of [y, x] coordinate pairs of all top-left corners in {block}
 function s:get_tls(block)
   let l:tls = []
   let l:li = 0
@@ -201,8 +226,9 @@ function s:get_tls(block)
   return l:tls
 endfunction
 
-" returns the index of the {boxes} list the cursor is in or -1 if the cursor
-" is not inside one
+
+" Returns the index of the box in {boxes} that the cursor is in, or -1 if the
+" cursor is not inside a box
 function s:in_box(boxes)
 
   let l:cp = getcurpos()

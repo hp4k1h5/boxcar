@@ -1,4 +1,5 @@
 ~ test increment box
+~ ! called from resize which calls s:increment
 
 Given (a box):
   ```
@@ -8,11 +9,8 @@ Given (a box):
   ```
 
 Execute (put cursor in box and inc):
-  AssertEqual getpos('.'), [0,1,1,0]
   call cursor(3,4)
-  AssertEqual getline(3), getline('.')
-  AssertEqual getpos('.'), [0,3,4,0]
-  call boxcar#box#resize(0, 1)
+  call boxcar#box#resize(0, 1, 0)
 
 Expect (a bigger box):
   ```
@@ -31,11 +29,8 @@ Given (a box and newlines):
   ```
 
 Execute (put cursor in box and inc):
-  AssertEqual getpos('.'), [0,1,1,0]
   call cursor(4,4)
-  AssertEqual getline(4), getline('.')
-  AssertEqual getpos('.'), [0,4,4,0]
-  call boxcar#box#resize(0, 1)
+  call boxcar#box#resize(0, 1, 0)
 
 Expect (a bigger box):
   ```
@@ -55,11 +50,8 @@ Given (a bigger box):
   ```
 
 Execute (put cursor in box and inc):
-  AssertEqual getpos('.'), [0,1,1,0]
   call cursor(4,11)
-  AssertEqual getline(4), getline('.')
-  AssertEqual getpos('.'), [0,4,11,0]
-  call boxcar#box#resize(0, 1)
+  call boxcar#box#resize(0, 1, 0)
 
 Expect (an even bigger box in the right place):
   ```
@@ -81,11 +73,8 @@ Given (a bigger box):
   ```
 
 Execute (put cursor in box and inc by more than 1):
-  AssertEqual getpos('.'), [0,1,1,0]
   call cursor(4,8)
-  AssertEqual getline(4), getline('.')
-  AssertEqual getpos('.'), [0,4,8,0]
-  call boxcar#box#resize(0, 9)
+  call boxcar#box#resize(0, 9, 0)
 
 Expect (an even bigger box in the right place):
   ```
@@ -110,11 +99,38 @@ Given (a bigger box):
   ```
 
 Execute (put cursor in box and inc by more than 1):
-  AssertEqual getpos('.'), [0,1,1,0]
   call cursor(5,16)
-  AssertEqual getline(5), getline('.')
+  call boxcar#box#resize(1, 9, 0)
+  " check that cursor has not moved
   AssertEqual getpos('.'), [0,5,16,0]
-  call boxcar#box#resize(1, 9)
+
+Expect (an even bigger box in the right place):
+  ```
+  
+      ┏━━━━━━━━━━━━━━━━━━┓
+      ┃ abc              ┃
+      ┃      xyw         ┃
+      ┃                  ┃
+      ┗━━━━━━━━━━━━━━━━━━┛
+  
+  ```
+
+
+=============================
+Given (two boxes side-by-side):
+  ```
+  
+      ┏━━━━━━━━━┓
+      ┃ abc     ┃
+      ┃      xyw┃
+      ┗━━━━━━━━━┛
+  
+  ```
+
+Execute (put cursor in box and inc by more than 1):
+  call cursor(5,16)
+  call boxcar#box#resize(1, 9, 0)
+  " check that cursor has not moved
   AssertEqual getpos('.'), [0,5,16,0]
 
 Expect (an even bigger box in the right place):
