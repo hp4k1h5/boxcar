@@ -1,45 +1,28 @@
-" TODO add syntax ```boxcar that allows user to input a syntax to create boxes
-" at compile time as opposed to dynamically as they type.
-" i.e. 
-" ```boxcar
-" @s='a string inside a box'
-" @t=header-title-and-the-text-comes-too
-" #0x0[@t]t
-" #10x0[@v]a
-" #10x0[@v]b
-" b->a
-" -------
-"  t
-"       a
-"
-"  b
-" -------
-" ```
-" would produce a box 10 chars wide with the text fitted inside.
-" if the shortest word was too long, it would error dynamically but compile to
-" a best fit approximation
-
 ""
-" does this register ?
-function! boxcar#box#make()abort
-  let l:cp = getcurpos()
+" @public
+" Create a unicode box whose top-left corner will be under the cursor. Must be
+" called inside a code-fence. See @function(boxcar#block#get).
+function! boxcar#box#make()
+
+  let l:line_nr = getpos('.')[1]
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(l:cp, '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
     echoerr v:exception
     return 1
   endtry
 
-  call append(l:cp[1]-1, ['┏━┓','┃ ┃','┗━┛'])
+  call append(l:line_nr[1]-1, ['┏━┓','┃ ┃','┗━┛'])
   " these numbers seem off
-  call cursor(l:cp[1]+1, 4)
-  " insert mode
-  execute 'normal! a'
+  call cursor(l:line_nr[1]+1, 4)
+
+  " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
+  " execute 'normal! a'
 endfunction
 
 function! boxcar#box#resize(y, x, live)
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(getcurpos(), '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(getpos('.'), '```')
   catch
     echoerr v:exception
     return 1

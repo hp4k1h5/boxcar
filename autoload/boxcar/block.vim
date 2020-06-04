@@ -1,23 +1,31 @@
 ""
 " @public
-function! boxcar#block#get(cp, marker)
-  let l:st = a:cp[1]
+" Get start and end lines of the code-block surrounding {line_nr}. Code block
+" is composed of lines inside of a code-fence, composed of two {markers}.
+" Default marker is the standard markdown ``` three backticks.
+function! boxcar#block#get(line_nr, marker)
+
+  " look up
+  let l:st = a:line_nr
   while l:st > 0
-    if stridx(getline(l:st), a:marker) ==# 0
+    if stridx(getline(l:st), a:marker) == 0
       break
     endif
-    let l:st-=1
+    let l:st -= 1
   endwhile
-  let l:en = a:cp[1]+1
+
+  " look down
+  let l:en = a:line_nr + 1
   while l:en <= line('$')
-    if stridx(getline(l:en), a:marker) ==# 0
+    if stridx(getline(l:en), a:marker) == 0
       break
     endif
-    let l:en+=1
+    let l:en += 1
   endwhile
   
   if ! l:st || l:en > line('$')
     throw 'cursor is not inside a '.a:marker.' code fence'
   endif
+
   return [l:st, l:en, getline(l:st, l:en)]
 endfunction
