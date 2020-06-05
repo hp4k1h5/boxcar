@@ -86,10 +86,10 @@ Expect (a box to the right of left margin and to the left of the arrow):
 
 =====================================
 
-Given (a code block with a box to the left):
+Given (a code block with a box to the left and blank spaces):
   ```
     ┏━┓   <-- leave 3 blank spaces
-    ┃ ┃  
+    ┃ ┃
     ┗━┛
   ```
 
@@ -104,3 +104,45 @@ Expect (a box to the right):
     ┗━┛   ┗━┛
   ```
 
+
+=====================================
+
+Given (a code block with a box to the left):
+  ```
+    ┏━┓
+    ┃ ┃
+    ┗━┛
+  ```
+
+Execute (call cursor on top of left arrow):
+  call cursor(2, 5)
+  call boxcar#box#make()
+
+Expect (a box to the immediately to the right):
+  ```
+    ┏━┓┏━┓
+    ┃ ┃┃ ┃
+    ┗━┛┗━┛
+  ```
+
+
+Given (different boxes):
+  ```
+     ┏━┓
+  ┏━┓┃ ┃
+  ┃ ┃┗━┛ 
+  ┗━┛
+  ```
+
+Execute (call cursor between them vertically and make box):
+  call cursor(4,8)
+  call boxcar#box#make()
+
+Expect ():
+  ```
+     ┏━┓
+  ┏━┓┃ ┃
+  ┃ ┃┗━┛ ┏━┓
+  ┗━┛    ┃ ┃
+         ┗━┛
+  ```

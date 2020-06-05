@@ -5,10 +5,11 @@
 " Default marker is the standard markdown ``` three backticks. Cursor must be
 " **between** code-block markers, not on either. Throws if not inside.
 function! boxcar#block#get(line_nr, marker)
+
   " look up
   let l:st = a:line_nr - 1
   while l:st > 0
-    if stridx(getline(l:st), a:marker) == 0
+    if getline(l:st) =~ '^'.a:marker
       break
     endif
     let l:st -= 1

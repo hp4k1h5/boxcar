@@ -1,12 +1,13 @@
 ""
 " @public
 " Create a 3x3 unicode box, putting the top-left corner under the cursor's
-" current position. The cursor will be placed inside the box.
+" current position. If BoxcarOn is enabled the cursor will be placed inside
+" the box.
 " Ex: 
 " >
 "   ```                          ```
-"   █ <━━━━┓                     ┏━┓
-"   ```    ┃              ┏━━━>  ┃█┃ ...cursor is inside box
+"   █ <━━━━┓                     ┏━┓  if BoxcarOn is enabled, cursor
+"   ```    ┃              ┏━━━>  ┃█┃   is inside box in insert mode
 "   with cursor here      ┃      ┗━┛
 "    call :BoxcarMake ━━━━┛      ```
 " <
@@ -42,7 +43,6 @@ function! boxcar#box#make()
   let l:i = l:line_nr
   for b in l:box_components
 
-    let l:l = getline(l:i)
     " add extra line if necessary
     if l:i == l:end
       call append(l:i-1, repeat(' ', l:str_ind-1))
@@ -50,8 +50,9 @@ function! boxcar#box#make()
       let l:end += 1
     " add extra width to line if necessary
     else
-      call setline(l:i, 
-            \ l:l . repeat(' ', (l:str_ind-1) - strchars(l:l)))
+      let l:l = getline(l:i)
+      call setline(l:i, l:l
+            \ .repeat(' ', (l:str_ind-1) - strchars(l:l)))
     endif
 
     " add box components
@@ -65,7 +66,8 @@ function! boxcar#box#make()
     let l:i += 1
   endfor
 
-  call cursor(l:line_nr+1, l:str_ind)
+  " put cursor on box
+  call cursor(l:line_nr+1, l:str_ind+2)
 
   " TODO resize if necessary
 
