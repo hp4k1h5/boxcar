@@ -94,7 +94,7 @@ Given (a code block with a box to the left and blank spaces):
   ```
 
 Execute (call cursor on top of left arrow):
-  call cursor(2, 9)
+  call cursor(2, 15)
   call boxcar#box#make()
 
 Expect (a box to the right):
@@ -110,7 +110,7 @@ Expect (a box to the right):
 Given (a code block with a box to the left):
   ```
     ┏━┓
-    ┃a┃
+    ┃b┃
     ┗━┛
   ```
 
@@ -121,7 +121,7 @@ Execute (call cursor on top of left arrow):
 Expect (a box to the immediately to the right):
   ```
     ┏━┓┏━┓
-    ┃a┃┃ ┃
+    ┃b┃┃ ┃
     ┗━┛┗━┛
   ```
 

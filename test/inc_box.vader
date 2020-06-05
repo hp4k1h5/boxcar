@@ -4,7 +4,7 @@
 Given (a box):
   ```
   ┏━┓
-  ┃ ┃
+  ┃a┃
   ┗━┛
   ```
 
@@ -15,7 +15,7 @@ Execute (put cursor in box and inc):
 Expect (a bigger box):
   ```
   ┏━━┓
-  ┃  ┃
+  ┃a ┃
   ┗━━┛
   ```
 
@@ -23,7 +23,7 @@ Given (a box and newlines):
   ```
   
   ┏━┓
-  ┃ ┃
+  ┃b┃
   ┗━┛
 
   ```
@@ -36,7 +36,7 @@ Expect (a bigger box):
   ```
   
   ┏━━┓
-  ┃  ┃
+  ┃b ┃
   ┗━━┛
 
   ```
@@ -45,7 +45,7 @@ Given (a bigger box):
   ```
   
         ┏━━┓
-        ┃  ┃
+        ┃c ┃
         ┗━━┛
   ```
 
@@ -57,7 +57,7 @@ Expect (an even bigger box in the right place):
   ```
   
         ┏━━━┓
-        ┃   ┃
+        ┃c  ┃
         ┗━━━┛
   ```
 
@@ -67,7 +67,7 @@ Given (a bigger box):
   ```
       ┏━━┓
       ┃  ┃
-      ┃  ┃
+      ┃l ┃
       ┃  ┃
       ┗━━┛
   ```
@@ -80,7 +80,7 @@ Expect (an even bigger box in the right place):
   ```
       ┏━━━━━━━━━━━┓
       ┃           ┃
-      ┃           ┃
+      ┃l          ┃
       ┃           ┃
       ┗━━━━━━━━━━━┛
   ```
@@ -119,28 +119,26 @@ Expect (an even bigger box in the right place):
 =============================
 Given (two boxes side-by-side):
   ```
-  
-      ┏━━━━━━━━━┓
-      ┃ abc     ┃
-      ┃      xyw┃
-      ┗━━━━━━━━━┛
-  
+  ┏━┓
+  ┃a┃    ┏━━━━━━━━━┓
+  ┗━┛    ┃ bbb     ┃
+         ┃      bbb┃
+         ┗━━━━━━━━━┛
+
   ```
 
-Execute (put cursor in box and inc by more than 1):
-  call cursor(5,16)
-  call boxcar#box#resize(1, 9, 0)
+Execute (put cursor in first box and inc by more than 1):
+  call cursor(3,4)
+  call boxcar#box#resize(0, 9, 0)
   " check that cursor has not moved
-  AssertEqual getpos('.'), [0,5,16,0]
+  AssertEqual getpos('.'), [0,3,4,0]
 
-Expect (an even bigger box in the right place):
+Expect (a bigger box in the right place):
   ```
-  
-      ┏━━━━━━━━━━━━━━━━━━┓
-      ┃ abc              ┃
-      ┃      xyw         ┃
-      ┃                  ┃
-      ┗━━━━━━━━━━━━━━━━━━┛
+  ┏━━━━━━━━━━┓
+  ┃a         ┃    ┏━━━━━━━━━┓
+  ┗━━━━━━━━━━┛    ┃ bbb     ┃
+                  ┃      bbb┃
+                  ┗━━━━━━━━━┛
   
   ```
-

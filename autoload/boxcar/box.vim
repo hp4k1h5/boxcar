@@ -15,7 +15,9 @@
 function! boxcar#box#make()
 
   " get code-block
-  let [l:line_nr, l:str_ind] = getpos('.')[1:2]
+  let l:cp = getcurpos()
+  let l:line_nr = l:cp[1]
+  let l:str_ind = l:cp[4]
   try
     let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
@@ -32,7 +34,7 @@ function! boxcar#box#make()
   endtry
 
   " if in a box throw
-  let l:cur_box_ind = s:in_box(l:corners)
+  let l:cur_box_ind = s:in_box(l:corners, [l:line_nr, l:str_ind])
   if l:cur_box_ind != -1
     echoerr 'cannot put box in box'
     return 1
@@ -91,9 +93,10 @@ function! boxcar#box#resize(y, x, live)
     throw 'bad arguments supplied please see docs'
   endif
 
-  let l:cp = getpos('.')
+  let l:cp = getcurpos()
+  let l:cp = [l:cp[1], l:cp[4]]
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(l:cp[1], '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(l:cp[0], '```')
   catch
     echoerr join(v:exception, '::')
     return 1
@@ -105,11 +108,14 @@ function! boxcar#box#resize(y, x, live)
     return 1
   endif
 
-  let l:cur_box_ind = s:in_box(l:corners)
+  let l:cur_box_ind = s:in_box(l:corners, [l:cp[0]-l:start+1, l:cp[1]-l:start+1])
   if l:cur_box_ind == -1
-    echoerr 'cursor '.l:y.':'.l:x.'not in box'
+    echoerr 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
     return 1
   endif
+
+  " get potentially affected boxes and premove required lines
+  call s:fix_lines(l:corners, l:start, l:cp[0], l:cp[0]+a:y, l:cp[1], a:x)
 
   call s:increment(l:block, l:start, l:cp, l:corners[l:cur_box_ind], a:y, a:x, a:live)
 endfunction
@@ -263,14 +269,13 @@ endfunction
 
 " Returns the index of the box in {boxes} that the cursor is in, or -1 if the
 " cursor is not inside a box
-function s:in_box(boxes)
+function s:in_box(boxes, cp)
 
-  let l:cp = getcurpos()
-  let l:y = l:cp[1]-1
-  let l:x = l:cp[4]-1
+  let l:y = a:cp[0]-1
+  let l:x = a:cp[1]-1
   let l:i = 0
   for b in a:boxes
-    if l:y > b[0][0] && l:y < b[3][0]
+    if l:y > b[0][0] && l:y < b[2][0]
           \ && l:x > b[0][1] && l:x < b[1][1]
       return l:i
     endif
@@ -288,6 +293,7 @@ endfunction
 function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
 
   let l:lines_to_fix = {}
+  " get set of lines affected by operation
   let l:b_set = range(a:fix_start - a:start, a:fix_end - a:start)
   for b in a:boxes
 
@@ -296,6 +302,7 @@ function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
       continue
     endif
 
+    " get set of lines a box touches
     let l:a_set = range(b[0][0], b[2][0])
     for a in l:a_set
       if match(l:b_set, a) == -1
@@ -304,10 +311,10 @@ function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
     endfor
   endfor
 
+  " fix lines that not otherwise moved by operation
   for k in keys(l:lines_to_fix)
     call setline(k, join(extend(
           \ split(getline(k), '\zs'),
           \ repeat([' '], a:n), a:str_ind - 1), ''))
   endfor
-
 endfunction
