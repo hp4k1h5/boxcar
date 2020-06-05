@@ -19,6 +19,7 @@ function! boxcar#box#make()
     let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
     echoerr v:exception
+    return 1
   endtry
 
   " get other boxes
@@ -32,12 +33,41 @@ function! boxcar#box#make()
   " if in a box throw
   let l:cur_box_ind = s:in_box(l:corners)
   if l:cur_box_ind != -1
-    throw 'cannot put box in box'
+    echoerr 'cannot put box in box'
+    return 1
   endif
 
-  call append(l:line_nr-1, ['┏━┓','┃ ┃','┗━┛'])
-  " these numbers seem off
-  call cursor(l:line_nr+1, 4)
+  " add new box
+  let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
+  let l:i = l:line_nr
+  for b in l:box_components
+
+    let l:l = getline(l:i)
+    " add extra line if necessary
+    if l:i == l:end
+      call append(l:i-1, repeat(' ', l:str_ind-1))
+      " end moves down
+      let l:end += 1
+    " add extra width to line if necessary
+    else
+      call setline(l:i, 
+            \ l:l . repeat(' ', (l:str_ind-1) - strchars(l:l)))
+    endif
+
+    " add box components
+    call setline(l:i, join(extend(
+          \ split(getline(l:i), '\zs'), 
+          \ split(b, '\zs'),
+          \ l:str_ind - 1
+          \ ), ''))
+
+    " next line
+    let l:i += 1
+  endfor
+
+  call cursor(l:line_nr+1, l:str_ind)
+
+  " TODO resize if necessary
 
   " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
   " execute 'normal! a'
@@ -106,8 +136,7 @@ function s:increment(block, start, cp, box, y, x, live)
   " when typing live, as character input will extend line by itself 
   let l:i = l:box_start_y + 1
   for l in a:block[a:box[0][0]+1: a:box[2][0]]
-    call setline(l:i,
-        \ join(extend( 
+    call setline(l:i, join(extend( 
         \ split(l, '\zs'), 
         \ l:i == a:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
         \ l:box_end_x), ''))

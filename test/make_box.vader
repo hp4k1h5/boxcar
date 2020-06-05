@@ -4,7 +4,7 @@
 
 Given (an empty code block):
   ```
-
+  
   ```
 
 Execute (put cursor inside and make box):
@@ -16,13 +16,37 @@ Expect (a box):
   ┏━┓
   ┃ ┃
   ┗━┛
-
   ```
 " Execute (expect cursor to be inside block):
 "   AssertEqual [3, 2], getpos('.')[1:2] 
 
 
 =====================================
+
+Given (an empty code block with several lines):
+  ```
+  
+  
+  
+  ```
+
+Execute (put cursor inside and make box):
+  call cursor(3, 1)
+  call boxcar#box#make()
+
+Expect (a box):
+  ```
+  
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+  ```
+" Execute (expect cursor to be inside block):
+"   AssertEqual [3, 2], getpos('.')[1:2] 
+
+
+=====================================
+
 
 Given (an empty code block):
   ```
@@ -41,15 +65,42 @@ Expect (no box):
 
 =====================================
 
-Execute (call cursor to the right):
+Given (a code block with a cursor to the right):
+  ```
+       <-- leave 5 blank spaces
+  a
+  a
+  ```
+
+Execute (call cursor on top of <):
   call cursor(2, 6)
+  call boxcar#box#make()
+
+Expect (a box to the right of left margin and to the left of the arrow):
+  ```
+       ┏━┓<-- leave 5 blank spaces
+  a    ┃ ┃
+  a    ┗━┛
+  ```
+
+
+=====================================
+
+Given (a code block with a box to the left):
+  ```
+    ┏━┓   <-- leave 3 blank spaces
+    ┃ ┃  
+    ┗━┛
+  ```
+
+Execute (call cursor on top of left arrow):
+  call cursor(2, 9)
   call boxcar#box#make()
 
 Expect (a box to the right):
   ```
-        ┏━┓
-        ┃ ┃
-        ┗━┛
-
+    ┏━┓   ┏━┓<-- leave 3 blank spaces
+    ┃ ┃   ┃ ┃
+    ┗━┛   ┗━┛
   ```
 
