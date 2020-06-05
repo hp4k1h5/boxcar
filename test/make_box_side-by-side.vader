@@ -1,0 +1,111 @@
+~ Test make_box 2
+
+=====================================
+
+Given (a code block with a box to the left and blank spaces):
+  ```
+    ┏━┓   <-- leave 3 blank spaces
+    ┃a┃
+    ┗━┛
+  ```
+
+Execute (call cursor on top of left arrow):
+  call cursor(2, 15)
+  call boxcar#box#make()
+
+Expect (a box to the right):
+  ```
+    ┏━┓   ┏━┓<-- leave 3 blank spaces
+    ┃a┃   ┃ ┃
+    ┗━┛   ┗━┛
+  ```
+
+
+=====================================
+
+Given (a code block with a box to the left):
+  ```
+    ┏━┓ 
+    ┃b┃
+    ┗━┛
+  ```
+
+Execute (call cursor to the right of first box):
+  call cursor(2, 12)
+  call boxcar#box#make()
+
+Expect (a box to the immediately to the right):
+  ```
+    ┏━┓┏━┓ 
+    ┃b┃┃ ┃
+    ┗━┛┗━┛
+  ```
+
+
+=====================================
+Given (different boxes):
+  ```
+     ┏━┓
+  ┏━┓┃a┃
+  ┃b┃┗━┛  
+  ┗━┛
+  ```
+
+Execute (call cursor between them vertically and make box):
+  call cursor(4,20)
+  call boxcar#box#make()
+
+Expect (a box that extends down beneath them):
+  ```
+     ┏━┓
+  ┏━┓┃a┃
+  ┃b┃┗━┛ ┏━┓ 
+  ┗━┛    ┃ ┃
+         ┗━┛
+  ```
+
+
+=====================================
+
+Given (a code block with a box to the right):
+  ```
+    ┏━┓
+    ┃g┃
+    ┗━┛
+  ```
+
+Execute (call cursor to the left of the box):
+  call cursor(2, 1)
+  call boxcar#box#make()
+
+Expect (a box to the left with all of my things):
+  ```
+  ┏━┓  ┏━┓
+  ┃ ┃  ┃g┃
+  ┗━┛  ┗━┛
+  ```
+
+
+=====================================
+
+Given (a code block with a box to the right):
+  ```
+  ┏━┓
+  ┃a┃
+  ┗━┛
+  ```
+
+Execute (call cursor to the left of and down from the box):
+  call cursor(3, 1)
+  call boxcar#box#make()
+
+Expect (a box to the to the left and down):
+  ```
+     ┏━┓
+  ┏━┓┃a┃
+  ┃ ┃┗━┛
+  ┗━┛
+  ```
+
+
+=====================================

@@ -17,7 +17,7 @@ function! boxcar#box#make()
   " get code-block
   let l:cp = getcurpos()
   let l:line_nr = l:cp[1]
-  let l:str_ind = l:cp[4]
+  let l:col = l:cp[4]
   try
     let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
@@ -34,14 +34,14 @@ function! boxcar#box#make()
   endtry
 
   " if in a box throw
-  let l:cur_box_ind = s:in_box(l:corners, [l:line_nr, l:str_ind])
+  let l:cur_box_ind = s:in_box(l:corners, [l:line_nr, l:col])
   if l:cur_box_ind != -1
     echoerr 'cannot put box in box'
     return 1
   endif
 
   " get potentially affected boxes and premove required lines
-  call s:fix_lines(l:corners, l:start, l:line_nr, l:line_nr+2, l:str_ind, 3)
+  call s:fix_lines(l:corners, l:start, l:line_nr, l:line_nr+2, l:col, 3)
 
   " add new box
   let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
@@ -50,21 +50,21 @@ function! boxcar#box#make()
 
     " add extra line if necessary
     if l:i == l:end
-      call append(l:i-1, repeat(' ', l:str_ind-1))
+      call append(l:i-1, repeat(' ', l:col-1))
       " end moves down
       let l:end += 1
     " add extra width to line if necessary
     else
       let l:l = getline(l:i)
       call setline(l:i, l:l
-            \ .repeat(' ', (l:str_ind-1) - strchars(l:l)))
+            \ .repeat(' ', (l:col-1) - strchars(l:l)))
     endif
 
     " add box components
     call setline(l:i, join(extend(
           \ split(getline(l:i), '\zs'), 
           \ split(b, '\zs'),
-          \ l:str_ind - 1
+          \ l:col - 1
           \ ), ''))
 
     " next line
@@ -72,7 +72,7 @@ function! boxcar#box#make()
   endfor
 
   " put cursor on box
-  call cursor(l:line_nr+1, l:str_ind+2)
+  call cursor(l:line_nr+1, l:col+2)
 
   " TODO resize if necessary
 
@@ -290,15 +290,16 @@ endfunction
 " the x axis between {start} and {end} line numbers inclusive, but are not
 " affected by other operations by splicing {n} blank spaces to the line at
 " cursor location.
-function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
+function s:fix_lines(boxes, start, fix_start, fix_end, col, n)
 
   let l:lines_to_fix = {}
   " get set of lines affected by operation
   let l:b_set = range(a:fix_start - a:start, a:fix_end - a:start)
+
   for b in a:boxes
 
-    " skip left boxes
-    if b[0][1] < a:str_ind - 1
+    " skip left boxes and down boxes
+    if b[0][1] < a:col - 1 || b[0][0] > a:fix_end - a:start
       continue
     endif
 
@@ -315,6 +316,10 @@ function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
   for k in keys(l:lines_to_fix)
     call setline(k, join(extend(
           \ split(getline(k), '\zs'),
-          \ repeat([' '], a:n), a:str_ind - 1), ''))
+          \ repeat([' '], a:n), a:col - 1), ''))
   endfor
 endfunction
+
+" function s:fix_cols(boxes, start, fix_start, fix_end, line, n)
+"   let l:cols_to_fix
+" endfunction
