@@ -163,12 +163,12 @@ function s:increment(block, start, cp, box, y, x, live)
         \ l:box_end_x), ''))
 
   " add y values !! wip
-  let l:i = a:y
-  while l:i
-    call append(getcurpos()[1], l:newline)
-    " next newline
-    let l:i -= 1
-  endwhile
+  " let l:i = a:y
+  " while l:i
+  "   call append(getcurpos()[1], l:newline)
+  "   " next newline
+  "   let l:i -= 1
+  " endwhile
 endfunction
 
 
@@ -299,7 +299,7 @@ function s:fix_lines(boxes, start, fix_start, fix_end, col, n)
   for b in a:boxes
 
     " skip left boxes and down boxes
-    if b[0][1] < a:col - 1 || b[0][0] > a:fix_end - a:start
+    if b[0][1] < a:col - 1 || b[0][0] > a:fix_end - a:start + 1
       continue
     endif
 
