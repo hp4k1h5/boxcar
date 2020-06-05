@@ -108,7 +108,7 @@ function! boxcar#box#resize(y, x, live)
     return 1
   endif
 
-  let l:cur_box_ind = s:in_box(l:corners, [l:cp[0]-l:start+1, l:cp[1]-l:start+1])
+  let l:cur_box_ind = s:in_box(l:corners, [l:cp[0]-l:start+1, l:cp[1]])
   if l:cur_box_ind == -1
     echoerr 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
     return 1
@@ -149,7 +149,7 @@ function s:increment(block, start, cp, box, y, x, live)
   for l in a:block[a:box[0][0]+1: a:box[2][0]]
     call setline(l:i, join(extend( 
         \ split(l, '\zs'), 
-        \ l:i == a:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
+        \ l:i == a:cp[0] && a:live ? [''] : split(l:blank_x, '\zs'), 
         \ l:box_end_x), ''))
     " next line
     let l:i += 1
