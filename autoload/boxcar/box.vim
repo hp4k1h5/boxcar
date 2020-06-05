@@ -38,6 +38,9 @@ function! boxcar#box#make()
     return 1
   endif
 
+  " get potentially affected boxes and premove required lines
+  call s:fix_lines(l:corners, l:start, l:line_nr, l:line_nr+2, l:str_ind, 3)
+
   " add new box
   let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
   let l:i = l:line_nr
@@ -275,4 +278,36 @@ function s:in_box(boxes)
   endfor
 
   return -1
+endfunction
+
+
+" Corrects lines in {boxes} that intersect with hypothetical lines drawn along
+" the x axis between {start} and {end} line numbers inclusive, but are not
+" affected by other operations by splicing {n} blank spaces to the line at
+" cursor location.
+function s:fix_lines(boxes, start, fix_start, fix_end, str_ind, n)
+
+  let l:lines_to_fix = {}
+  let l:b_set = range(a:fix_start - a:start, a:fix_end - a:start)
+  for b in a:boxes
+
+    " skip left boxes
+    if b[0][1] < a:str_ind - 1
+      continue
+    endif
+
+    let l:a_set = range(b[0][0], b[2][0])
+    for a in l:a_set
+      if match(l:b_set, a) == -1
+        let l:lines_to_fix[a:start + a] = 1
+      endif
+    endfor
+  endfor
+
+  for k in keys(l:lines_to_fix)
+    call setline(k, join(extend(
+          \ split(getline(k), '\zs'),
+          \ repeat([' '], a:n), a:str_ind - 1), ''))
+  endfor
+
 endfunction

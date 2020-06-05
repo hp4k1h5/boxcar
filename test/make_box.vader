@@ -89,7 +89,7 @@ Expect (a box to the right of left margin and to the left of the arrow):
 Given (a code block with a box to the left and blank spaces):
   ```
     ┏━┓   <-- leave 3 blank spaces
-    ┃ ┃
+    ┃a┃
     ┗━┛
   ```
 
@@ -100,7 +100,7 @@ Execute (call cursor on top of left arrow):
 Expect (a box to the right):
   ```
     ┏━┓   ┏━┓<-- leave 3 blank spaces
-    ┃ ┃   ┃ ┃
+    ┃a┃   ┃ ┃
     ┗━┛   ┗━┛
   ```
 
@@ -110,27 +110,28 @@ Expect (a box to the right):
 Given (a code block with a box to the left):
   ```
     ┏━┓
-    ┃ ┃
+    ┃a┃
     ┗━┛
   ```
 
 Execute (call cursor on top of left arrow):
-  call cursor(2, 5)
+  call cursor(2, 6)
   call boxcar#box#make()
 
 Expect (a box to the immediately to the right):
   ```
     ┏━┓┏━┓
-    ┃ ┃┃ ┃
+    ┃a┃┃ ┃
     ┗━┛┗━┛
   ```
 
 
+=====================================
 Given (different boxes):
   ```
      ┏━┓
-  ┏━┓┃ ┃
-  ┃ ┃┗━┛ 
+  ┏━┓┃a┃
+  ┃b┃┗━┛ 
   ┗━┛
   ```
 
@@ -138,11 +139,58 @@ Execute (call cursor between them vertically and make box):
   call cursor(4,8)
   call boxcar#box#make()
 
-Expect ():
+Expect (a box that extends down beneath them):
   ```
      ┏━┓
-  ┏━┓┃ ┃
-  ┃ ┃┗━┛ ┏━┓
+  ┏━┓┃a┃
+  ┃b┃┗━┛ ┏━┓
   ┗━┛    ┃ ┃
          ┗━┛
   ```
+
+
+=====================================
+
+Given (a code block with a box to the right):
+  ```
+    ┏━┓
+    ┃g┃
+    ┗━┛
+  ```
+
+Execute (call cursor to the left of the box):
+  call cursor(2, 1)
+  call boxcar#box#make()
+
+Expect (a box to the left with all of my things):
+  ```
+  ┏━┓  ┏━┓
+  ┃ ┃  ┃g┃
+  ┗━┛  ┗━┛
+  ```
+
+
+=====================================
+
+
+Given (a code block with a box to the right):
+  ```
+  ┏━┓
+  ┃a┃
+  ┗━┛
+  ```
+
+Execute (call cursor to the left of and down from the box):
+  call cursor(3, 1)
+  call boxcar#box#make()
+
+Expect (a box to the to the left and down):
+  ```
+     ┏━┓
+  ┏━┓┃a┃
+  ┃ ┃┗━┛
+  ┗━┛
+  ```
+
+
+=====================================
