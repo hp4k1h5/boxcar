@@ -16,11 +16,12 @@ boxcar#block#get({line_nr}, {markers})                    *boxcar#block#get()*
 
 boxcar#box#make()                                          *boxcar#box#make()*
   Create a 3x3 unicode box, putting the top-left corner under the cursor's
-  current position. The cursor will be placed inside the box. Ex:
+  current position. If BoxcarOn is enabled the cursor will be placed inside
+  the box. Ex:
 >
     ```                          ```
-    █ <━━━━┓                     ┏━┓
-    ```    ┃              ┏━━━>  ┃█┃ ...cursor is inside box
+    █ <━━━━┓                     ┏━┓  if BoxcarOn is enabled, cursor
+    ```    ┃              ┏━━━>  ┃█┃   is inside box in insert mode
     with cursor here      ┃      ┗━┛
      call :BoxcarMake ━━━━┛      ```
 <
