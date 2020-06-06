@@ -3,35 +3,21 @@ HP4k1h5 <robertwalks@gmail.com>                                       *boxcar*
 
 ==============================================================================
 CONTENTS                                                     *boxcar-contents*
-  1. Functions..............................................|boxcar-functions|
+  1. Introduction...............................................|boxcar-intro|
+  2. Commands................................................|boxcar-commands|
+  3. Functions..............................................|boxcar-functions|
 
 ==============================================================================
-FUNCTIONS                                                   *boxcar-functions*
+INTRODUCTION                                                    *boxcar-intro*
 
-boxcar#block#get({line_nr}, {markers})                    *boxcar#block#get()*
-  Get start and end lines of the code-block surrounding {line_nr}. Code block
-  is composed of lines inside of a code-fence, composed of two {markers}.
-  Default marker is the standard markdown ``` three backticks. Cursor must be
-  **between** code-block markers, not on either. Throws if not inside.
+boxcar is a plugin for creating unicode boxes. All boxcar operations are
+assumed to take place inside of a markdown code-fence. The basic operations of
+this plugin include creating and resizing boxes. While more functionality is
+being added, try to keep in mind two vim commands that will help a lot: 1)
+Replace mode, i.e. type 'R' in normal mode, and 2) <Ctrl-v>, which can perform
+box-like cut and paste.
 
-boxcar#box#make()                                          *boxcar#box#make()*
-  Create a 3x3 unicode box, putting the top-left corner under the cursor's
-  current position. If BoxcarOn is enabled the cursor will be placed inside
-  the box. Ex:
->
-    ```                          ```
-    █ <━━━━┓                     ┏━┓  if BoxcarOn is enabled, cursor
-    ```    ┃              ┏━━━>  ┃█┃   is inside box in insert mode
-    with cursor here      ┃      ┗━┛
-     call :BoxcarMake ━━━━┛      ```
-<
-  Must be called inside a code-fence; see |boxcar#block#get()|.
+==============================================================================
+COMMANDS                                                     *boxcar-commands*
 
-boxcar#box#resize({y}, {x}, {live})                      *boxcar#box#resize()*
-  Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
-  true, the line under edit will not be padded out, to accomodate the newly
-  inserted char. The y and x values are added from the cursor's current
-  position. currently only works with positive numbers.
-
-
-vim:tw=78:ts=8:ft=help:norl:
+:BoxcarOn                                                          *:BoxcarOn*

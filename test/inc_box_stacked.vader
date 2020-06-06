@@ -20,10 +20,10 @@ Execute (put cursor in box a and inc by 3 5):
 Expect (a bigger a):
   ```
         ┏━━━━━━┓
+        ┃      ┃
+        ┃      ┃
+        ┃      ┃
         ┃a     ┃
-        ┃      ┃
-        ┃      ┃
-        ┃      ┃
         ┗━━━━━━┛
       ┏━━━━━━━━━┓
       ┃ b       ┃

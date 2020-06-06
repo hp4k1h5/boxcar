@@ -6,8 +6,8 @@
 " Ex: 
 " >
 "   ```                          ```
-"   █ <━━━━┓                     ┏━┓  if BoxcarOn is enabled, cursor
-"   ```    ┃              ┏━━━>  ┃█┃   is inside box in insert mode
+"   █ <━━━━┓                     ┏━┓ 
+"   ```    ┃              ┏━━━>  ┃█┃   cursor is inside box
 "   with cursor here      ┃      ┗━┛
 "    call :BoxcarMake ━━━━┛      ```
 " <
@@ -120,19 +120,17 @@ function! boxcar#box#resize(y, x, live)
         \ [l:cur_box[0][0]+l:start, l:cp[1]],
         \ (l:cur_box[2][0] - l:cur_box[0][0] + 1), a:x)
 
-  call s:increment(l:block, l:start, l:cp, l:cur_box, a:y, a:x, a:live)
+  call s:increment(l:block, l:start, l:end, l:cp, l:cur_box, a:y, a:x, a:live)
 endfunction
 
 
 " add empty rows {y} and columns {x} to a {box} beginning at cursor
 " location {cp}. If {live} is true, skip line extension for cp[1].
-function s:increment(block, start, cp, box, y, x, live)
+function s:increment(block, start, end, cp, box, y, x, live)
 
   " set box elements
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
-  let l:newline = repeat(' ', a:box[0][1]).'┃'. 
-        \ repeat(' ', a:box[1][1] - (a:box[0][1] + 1) + a:x).'┃'
 
   " set constants
   let l:box_start_y = a:start + a:box[0][0] 
@@ -166,11 +164,23 @@ function s:increment(block, start, cp, box, y, x, live)
         \ l:box_end_x), ''))
 
   " add y values !! wip
-  let l:i = a:y
-  while l:i
-    call append(getcurpos()[1], l:newline)
-    " next newline
-    let l:i -= 1
+  let l:i = a:cp[0]
+  let l:end = a:end
+  let l:stop = l:i + a:y
+  while l:i < l:stop
+    " add newlines if at block end
+    if l:i == l:end
+      call append(l:i - 1, repeat(' ', a:box[2][0] + a:x + 1))
+      let l:end += 1
+    endif
+    let l:rep_start = getline(l:i)[:a:box[0][1]-1]
+    let l:rep_start = l:rep_start.repeat(' ', a:box[0][1] - len(l:rep_start))
+    call append(l:i - 1, 
+          \ l:rep_start.'┃'
+          \ .repeat(' ', a:box[1][1] - a:box[0][1] + a:x - 1)
+          \ .'┃')
+
+    let l:i += 1
   endwhile
 endfunction
 
