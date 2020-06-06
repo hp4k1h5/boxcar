@@ -41,7 +41,7 @@ function! boxcar#box#make()
   endif
 
   " get potentially affected boxes and premove required lines
-  call s:fix_lines(l:corners, l:start, l:line_nr, l:line_nr+2, l:col, 3)
+  call s:fix_lines(l:corners, l:start, [l:line_nr, l:col], 3, 3)
 
   " add new box
   let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
@@ -286,37 +286,45 @@ function s:in_box(boxes, cp)
 endfunction
 
 
-" Corrects lines in {boxes} that intersect with hypothetical lines drawn along
-" the x axis between {start} and {end} line numbers inclusive, but are not
-" affected by other operations by splicing {n} blank spaces to the line at
-" cursor location.
-function s:fix_lines(boxes, start, fix_start, fix_end, col, n)
+" Corrects lines in {boxes} that intersect with horizontal lines on the x axis
+" between 
+function s:fix_lines(boxes, start, cp, y, x)
 
   let l:lines_to_fix = {}
-  " get set of lines affected by operation
-  let l:b_set = range(a:fix_start - a:start, a:fix_end - a:start)
+  " get set of lines affected by operation, mapped to block
+  let l:b_set = range(a:cp[0] - a:start-1, a:cp[0] + a:y  - a:start-1)
 
   for b in a:boxes
 
     " skip left boxes and down boxes
-    if b[0][1] < a:col - 1 || b[0][0] > a:fix_end - a:start + 1
+    if b[0][1] < a:cp[1] - 1 ||
+          \ b[0][0] >= a:cp[0] + a:y
       continue
     endif
 
     " get set of lines a box touches
     let l:a_set = range(b[0][0], b[2][0])
+    " find boxes that touch
     for a in l:a_set
-      if match(l:b_set, a) == -1
-        let l:lines_to_fix[a:start + a] = 1
+      if match(l:b_set, a) > -1
+        " find lines that don't
+        for aa in l:a_set
+          if match(l:b_set, aa) == -1
+            let l:lines_to_fix[a:start + aa] = 1
+          endif
+        endfor
+        " next box
+        break
       endif
     endfor
   endfor
 
+  echom keys(l:lines_to_fix)
   " fix lines that not otherwise moved by operation
   for k in keys(l:lines_to_fix)
     call setline(k, join(extend(
           \ split(getline(k), '\zs'),
-          \ repeat([' '], a:n), a:col - 1), ''))
+          \ repeat([' '], a:x), a:cp[1]-1), ''))
   endfor
 endfunction
 
