@@ -292,7 +292,7 @@ function s:fix_lines(boxes, start, cp, y, x)
 
   let l:lines_to_fix = {}
   " get set of lines affected by operation, mapped to block
-  let l:b_set = range(a:cp[0] - a:start-1, a:cp[0] + a:y  - a:start-1)
+  let l:b_set = range(a:cp[0] - a:start, a:cp[0] + a:y  - a:start-1)
 
   for b in a:boxes
 
