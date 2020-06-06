@@ -307,7 +307,6 @@ function s:fix_lines(boxes, start, cp, y, x)
 
     " get set of lines a box touches
     let l:a_set = range(b[0][0], b[2][0])
-    echom join(l:a_set, '/')
     " find boxes that touch
     for a in l:a_set
       if match(l:b_set, a) > -1
@@ -323,7 +322,6 @@ function s:fix_lines(boxes, start, cp, y, x)
     endfor
   endfor
 
-    echom keys(l:lines_to_fix)
   " fix lines that not otherwise moved by operation
   for k in keys(l:lines_to_fix)
     call setline(k, join(extend(

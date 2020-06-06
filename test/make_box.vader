@@ -23,6 +23,30 @@ Expect (a box):
 
 =====================================
 
+Given (an empty code block in middle of pages):
+
+
+
+  ```
+  
+  ```
+
+Execute (put cursor inside and make box):
+  call cursor(5, 1)
+  call boxcar#box#make()
+
+Expect (a box in the middle):
+
+
+
+  ```
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+  ```
+
+
+=====================================
 Given (an empty code block with several lines):
   ```
   
