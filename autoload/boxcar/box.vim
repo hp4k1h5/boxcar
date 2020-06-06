@@ -163,22 +163,30 @@ function s:increment(block, start, end, cp, box, y, x, live)
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
-  " add y values !! wip
+  " reevaluate block and boxes after extending right
+  let [l:start, l:end, l:block] = boxcar#block#get(a:cp[0], '```')
+  let l:corners = s:get_corners(l:block)
+  let l:cur_box_ind = s:in_box(l:corners, [a:cp[0]-a:start+1, a:cp[1]-a:live])
+  let l:box = l:corners[l:cur_box_ind]
+
+  " add y values 
   let l:i = a:cp[0]
   let l:end = a:end
   let l:stop = l:i + a:y
   while l:i < l:stop
     " add newlines if at block end
     if l:i == l:end
-      call append(l:i - 1, repeat(' ', a:box[2][0] + a:x + 1))
+      call append(l:i - 1, repeat(' ', l:box[0][1] + 1))
       let l:end += 1
     endif
-    let l:rep_start = getline(l:i)[:a:box[0][1]-1]
-    let l:rep_start = l:rep_start.repeat(' ', a:box[0][1] - len(l:rep_start))
-    call append(l:i - 1, 
+    let l:rep_start = l:box[0][1] > 0
+          \ ? join(split(l:block[l:i - a:start], '\zs')[:l:box[0][1]], '')
+          \ : '' 
+    let l:rep_end = join(split(l:block[l:i - a:start], '\zs')[l:box[1][1] + 1:], '')
+    call append(l:i-1, 
           \ l:rep_start.'┃'
-          \ .repeat(' ', a:box[1][1] - a:box[0][1] + a:x - 1)
-          \ .'┃')
+          \ .repeat(' ', l:box[1][1] - l:box[0][1] - 1)
+          \ .'┃'.l:rep_end)
 
     let l:i += 1
   endwhile

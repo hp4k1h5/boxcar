@@ -87,3 +87,31 @@ Expect (bigger x and the other boxes to be moved correctly):
   ┗━┛   ┗━┛     ┗━┛┃z┃
                    ┗━┛
   ```
+
+
+=============================
+Given (two boxes side-by-side):
+  ```
+
+  ┏━┓
+  ┃a┃    ┏━━━━━━━━━┓
+  ┗━┛    ┃ bbb     ┃
+         ┃      bbb┃
+         ┗━━━━━━━━━┛
+
+  ```
+
+Execute (put cursor in first box and inc by more than 1):
+  call cursor(4,4)
+  call boxcar#box#resize(2, 4, 0)
+
+Expect (a bigger box in the right place):
+  ```
+
+  ┏━━━━━┓
+  ┃     ┃    ┏━━━━━━━━━┓
+  ┃     ┃    ┃ bbb     ┃
+  ┃a    ┃    ┃      bbb┃
+  ┗━━━━━┛    ┗━━━━━━━━━┛
+  
+  ```

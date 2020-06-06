@@ -5,8 +5,17 @@ still very experimental and liable to have odd behaviors and [bugs](#bugs).
 please see [CONTRIBUTING](.github/CONTRIBUTING.md) if you would like to help improve
 this plugin.
 
-a vim plugin to get configurable text boxes around text as you type
-![4 boxes around text](img/boxes.png)
+a vim plugin to create and edit configurable unicode boxes
+
+```
+  ┏━━━━┓  ┏━━━━┓
+  ┃    ┃
+  ┃    ┃
+  ┃    ┃  ┃    ┃
+  ┗━━━━┛  ┃    ┃
+          ┃    ┃
+          ┗━━━━┛
+```
 
 ### usage
 please forgive the lack of documentation anywhere. hopefully v0.1 will have

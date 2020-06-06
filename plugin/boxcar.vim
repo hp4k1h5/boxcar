@@ -19,10 +19,12 @@
 " functionality is being added, try to keep in mind two vim commands that will
 " help a lot: 1) Replace mode, i.e. type 'R' in normal mode, and 2) <Ctrl-v>,
 " which can perform box-like cut and paste. 
+"
+" For some examples see vader test files.
 
 
 ""
-" Enables auto-grow as you type inside a box. Call @plugin(BoxcarOff) to
+" Enables auto-grow as you type inside a box. Call 'BoxcarOff' to
 " disable  
 " ! hitting enter will not work as expected
 command -nargs=? BoxcarOn call boxcar#on()
