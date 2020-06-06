@@ -1,9 +1,11 @@
-~ Test inc_box 3
+" ~ Test inc_box 3
 
 
 =============================
 Given (two boxes side-by-side):
   ```
+
+
   ┏━┓
   ┃a┃    ┏━━━━━━━━━┓
   ┗━┛    ┃ bbb     ┃
@@ -13,13 +15,15 @@ Given (two boxes side-by-side):
   ```
 
 Execute (put cursor in first box and inc by more than 1):
-  call cursor(3,4)
+  call cursor(5,4)
   call boxcar#box#resize(0, 9, 0)
   " check that cursor has not moved
-  AssertEqual getpos('.'), [0,3,4,0]
+  AssertEqual getpos('.'), [0,5,4,0]
 
 Expect (a bigger box in the right place):
   ```
+
+
   ┏━━━━━━━━━━┓
   ┃a         ┃    ┏━━━━━━━━━┓
   ┗━━━━━━━━━━┛    ┃ bbb     ┃
@@ -46,7 +50,7 @@ Execute (put cursor in u and resize horizontally):
   call boxcar#box#resize(0, 1, 0)
 
 
-Expect (the other boxes to be moved correctly):
+Expect (bigger u and the other boxes to be moved correctly):
   ```
       ┏━┓   
       ┃v┃   ┏━┓         
@@ -74,7 +78,7 @@ Execute (put cursor in x and resize horizontally):
   call boxcar#box#resize(0, 2, 0)
 
 
-Expect (the other boxes to be moved correctly):
+Expect (bigger x and the other boxes to be moved correctly):
   ```
      ┏━┓   
      ┃v┃   ┏━━━┓         
@@ -83,5 +87,3 @@ Expect (the other boxes to be moved correctly):
   ┗━┛   ┗━┛     ┗━┛┃z┃
                    ┗━┛
   ```
-
-

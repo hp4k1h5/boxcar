@@ -113,11 +113,14 @@ function! boxcar#box#resize(y, x, live)
     echoerr 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
     return 1
   endif
+  let l:cur_box = l:corners[l:cur_box_ind]
 
   " get potentially affected boxes and premove required lines
-  call s:fix_lines(l:corners, l:start, l:cp[0], l:cp[0]+a:y, l:cp[1], a:x)
+  call s:fix_lines(l:corners, l:start, 
+        \ [l:cur_box[0][0]+l:start, l:cp[1]],
+        \ (l:cur_box[2][0] - l:cur_box[0][0] + 1), a:x)
 
-  call s:increment(l:block, l:start, l:cp, l:corners[l:cur_box_ind], a:y, a:x, a:live)
+  call s:increment(l:block, l:start, l:cp, l:cur_box, a:y, a:x, a:live)
 endfunction
 
 
@@ -298,12 +301,13 @@ function s:fix_lines(boxes, start, cp, y, x)
 
     " skip left boxes and down boxes
     if b[0][1] < a:cp[1] - 1 ||
-          \ b[0][0] >= a:cp[0] + a:y
+          \ b[0][0] > a:cp[0] - a:start + a:y
       continue
     endif
 
     " get set of lines a box touches
     let l:a_set = range(b[0][0], b[2][0])
+    echom join(l:a_set, '/')
     " find boxes that touch
     for a in l:a_set
       if match(l:b_set, a) > -1
@@ -319,7 +323,7 @@ function s:fix_lines(boxes, start, cp, y, x)
     endfor
   endfor
 
-  echom keys(l:lines_to_fix)
+    echom keys(l:lines_to_fix)
   " fix lines that not otherwise moved by operation
   for k in keys(l:lines_to_fix)
     call setline(k, join(extend(
