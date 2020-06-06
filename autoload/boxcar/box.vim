@@ -166,12 +166,12 @@ function s:increment(block, start, cp, box, y, x, live)
         \ l:box_end_x), ''))
 
   " add y values !! wip
-  " let l:i = a:y
-  " while l:i
-  "   call append(getcurpos()[1], l:newline)
-  "   " next newline
-  "   let l:i -= 1
-  " endwhile
+  let l:i = a:y
+  while l:i
+    call append(getcurpos()[1], l:newline)
+    " next newline
+    let l:i -= 1
+  endwhile
 endfunction
 
 

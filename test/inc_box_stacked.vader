@@ -11,26 +11,23 @@ Given (boxes a and b):
       ┃ b       ┃
       ┃         ┃
       ┗━━━━━━━━━┛
-  
   ```
 
 Execute (put cursor in box a and inc by 3 5):
-  call cursor(5,16)
-  call boxcar#box#resize(1, 9, 0)
-  " check that cursor has not moved
-  AssertEqual getpos('.'), [0,5,16,0]
+  call cursor(3,10)
+  call boxcar#box#resize(3, 5, 0)
 
-Expect (an even bigger box in the right place):
+Expect (a bigger a):
   ```
-  
-      ┏━━━━━━━━━━━━━━━━━━┓
-      ┃ abc              ┃
-      ┃      xyw         ┃
-      ┃                  ┃
-      ┗━━━━━━━━━━━━━━━━━━┛
-  
+        ┏━━━━━━┓
+        ┃a     ┃
+        ┃      ┃
+        ┃      ┃
+        ┃      ┃
+        ┗━━━━━━┛
+      ┏━━━━━━━━━┓
+      ┃ b       ┃
+      ┃         ┃
+      ┗━━━━━━━━━┛
   ```
-
-
 =============================
-
