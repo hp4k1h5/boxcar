@@ -93,14 +93,20 @@ function s:increment(block, start, end, cp, box, y, x, live)
   let stop = i + a:y
   while i < stop
     " add newlines if at block end
-    if i == end
-      call append(i - 1, repeat(' ', box[0][1] + 1))
-      let end += 1
+    " if i-1 >= end
+    "   call append(i, repeat(' ', box[1][1] + 1))
+    "   let end += 1
+    " endif
+
+    if i < a:end 
+          \ && box[0][1] > 0 
+          \ && len(a:block[i-a:start]) >= box[0][1]
+      let rep_start =  join(split(block[i - a:start], '\zs')[:box[0][1]-1], '')
+      let rep_end = join(split(a:block[i - a:start], '\zs')[box[1][1] + 1:], '')
+    else
+      let rep_start = repeat(' ', box[0][1])
+      let rep_end = ''
     endif
-    let rep_start = box[0][1] > 0
-          \ ? join(split(block[i - a:start], '\zs')[:box[0][1]-1], '')
-          \ : '' 
-    let rep_end = join(split(block[i - a:start], '\zs')[box[1][1] + 1:], '')
     call append(i-1, 
           \ rep_start.'┃'
           \ .repeat(' ', box[1][1] - box[0][1] - 1)

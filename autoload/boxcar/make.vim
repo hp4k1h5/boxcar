@@ -81,15 +81,16 @@ function! boxcar#make#box(...)
     let i += 1
   endfor
 
-  echom getcurpos()
   " put cursor in box (3 for the three unicodechars in ┃
   call cursor(row+1, col+3)
-  echom getcurpos()
 
   " resize if necessary
   if y > 3 || x > 3
     call boxcar#resize#box(y-3, x-3, 0)
   endif
+
+  " put cursor in box (3 for the three unicodechars in ┃
+  call cursor(row+1, col+3)
 
   " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
   " execute 'normal! a'

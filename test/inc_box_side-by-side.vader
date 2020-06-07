@@ -107,11 +107,13 @@ Execute (put cursor in first box and inc by more than 1):
 
 Expect (a bigger box in the right place):
   ```
-
-  ┏━━━━━┓
-  ┃     ┃    ┏━━━━━━━━━┓
-  ┃     ┃    ┃ bbb     ┃
-  ┃a    ┃    ┃      bbb┃
-  ┗━━━━━┛    ┗━━━━━━━━━┛
   
+  ┏━━━━━┓
+  ┃     ┃
+  ┃     ┃
+  ┃a    ┃    ┏━━━━━━━━━┓
+  ┗━━━━━┛    ┃ bbb     ┃
+             ┃      bbb┃
+             ┗━━━━━━━━━┛
+
   ```

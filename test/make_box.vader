@@ -111,19 +111,48 @@ Expect (a box to the right of left margin and to the left of the arrow):
 =====================================
 
 Given (a code block):
+  ```boxcar
+
+    
+  ```
+
+Execute (make a 7x5 box):
+  call cursor(3, 4)
+  call boxcar#make#box(7, 5)
+
+Expect (a 7x5 box):
+  ```boxcar
+
+   ┏━━━┓ 
+   ┃   ┃
+   ┃   ┃
+   ┃   ┃
+   ┃   ┃
+   ┃   ┃
+   ┗━━━┛
+  ```
+
+
+=====================================
+
+Given (a code block):
   ```
   
+        
   ```
 
 Execute (make a 5x5 box):
-  call cursor(2, 3)
-  call boxcar#make#box(5, 5)
+  call cursor(3, 7)
+  call boxcar#make#box(6, 7)
+  AssertEqual getcurpos(), [0, 4, 9, 0, 7]
 
-Expect (a 5x5 box):
+Expect (a 6x7 box ):
   ```
-  ┏━━━┓
-  ┃   ┃
-  ┃   ┃
-  ┃   ┃
-  ┗━━━┛
+
+       ┏━━━━━┓ 
+       ┃     ┃
+       ┃     ┃
+       ┃     ┃
+       ┃     ┃
+       ┗━━━━━┛
   ```

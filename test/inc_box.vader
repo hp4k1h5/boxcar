@@ -117,18 +117,20 @@ Expect (an even bigger box in the right place):
 =============================
 Given (a bigger box):
   ```
-  
+
       ┏━━━━━━━━━┓
       ┃ abc     ┃
+      ┃      ghi┃
       ┃      xyw┃
       ┗━━━━━━━━━┛
-  
+
+
   ```
 
 Execute (put cursor in box and inc y and x by more than 1):
   call cursor(5,16)
-  call boxcar#resize#box(2, 9, 0)
-  AssertEqual getpos('.'), [0,7,16,0]
+  call boxcar#resize#box(10, 9, 0)
+  " AssertEqual getpos('.'), [0,7,16,0]
 
 Expect (an even bigger box in the right place):
   ```
@@ -137,7 +139,17 @@ Expect (an even bigger box in the right place):
       ┃ abc              ┃
       ┃                  ┃
       ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃                  ┃
+      ┃      ghi         ┃
       ┃      xyw         ┃
       ┗━━━━━━━━━━━━━━━━━━┛
   
+
   ```
