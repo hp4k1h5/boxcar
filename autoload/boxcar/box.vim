@@ -1,6 +1,6 @@
 ""
 " @public
-" Create a 3x3 unicode box, putting the top-left corner under the cursor's
+" Create a {y} by {x} unicode box, putting the top-left corner under the cursor's
 " current position. If BoxcarOn is enabled the cursor will be placed inside
 " the box.
 " Ex: 
@@ -11,17 +11,24 @@
 "   with cursor here      ┃      ┗━┛
 "    call :BoxcarMake ━━━━┛      ```
 " <
-" Must be called inside a code-fence; see @function(boxcar#block#get).
-function! boxcar#box#make()
+" If called without parameters, the defaults are 3 and 3, which area also the
+" minimum values for this function. If called with only
+" 1 parameter the default for the {x} will be 3. Must be called inside a
+"   code-fence; see @function(boxcar#block#get).
+function! boxcar#box#make(...)
+
+  " set defaults and check params 
+  let l:y = a:0 > 0 ? a:1 : 3 
+  let l:x = a:0 > 1 ? a:2 : 3 
 
   " get code-block
   let l:cp = getcurpos()
-  let l:line_nr = l:cp[1]
+  let l:row = l:cp[1]
   let l:col = l:cp[4]
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(l:row, '```')
   catch
-    echoerr v:exception
+    echohl v:exception
     return 1
   endtry
 
@@ -29,23 +36,23 @@ function! boxcar#box#make()
   try
     let l:corners = s:get_corners(l:block)
   catch
-    echoerr v:exception.'::'.v:throwpoint
+    echohl v:exception.'::'.v:throwpoint
     return 1
   endtry
 
   " if in a box throw
-  let l:cur_box_ind = s:in_box(l:corners, [l:line_nr, l:col])
+  let l:cur_box_ind = s:in_box(l:corners, [l:row, l:col])
   if l:cur_box_ind != -1
-    echoerr 'cannot put box in box'
+    echohl 'cannot put box in box'
     return 1
   endif
 
   " get potentially affected boxes and premove required lines
-  call s:fix_lines(l:corners, l:start, [l:line_nr, l:col], 3, 3)
+  call s:fix_lines(l:corners, l:start, [l:row, l:col], 3, 3)
 
   " add new box
   let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
-  let l:i = l:line_nr
+  let l:i = l:row
   for b in l:box_components
 
     " add extra line if necessary
@@ -72,9 +79,12 @@ function! boxcar#box#make()
   endfor
 
   " put cursor on box
-  call cursor(l:line_nr+1, l:col+2)
+  call cursor(l:row+1, l:col+2)
 
-  " TODO resize if necessary
+  " resize if necessary
+  if l:y > 3 || l:x > 3
+    call boxcar#box#resize(l:y-3, l:x-3, 0)
+  endif
 
   " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
   " execute 'normal! a'
@@ -89,7 +99,7 @@ endfunction
 " position. currently only works with positive numbers.
 function! boxcar#box#resize(y, x, live)
 
-  if a:y < 0 || a:x < 0 || a:live < 0 || a:live > 1
+  if l:y < 0 || l:X < 0 || a:live < 0 || a:live > 1
     throw 'bad arguments supplied please see docs'
   endif
 
@@ -98,19 +108,19 @@ function! boxcar#box#resize(y, x, live)
   try
     let [l:start, l:end, l:block] = boxcar#block#get(l:cp[0], '```')
   catch
-    echoerr join(v:exception, '::')
+    echohl join(v:exception, '::')
     return 1
   endtry
 
   let l:corners = s:get_corners(l:block)
   if ! len(l:corners)
-    echoerr 'no top-left corners'
+    echohl 'no top-left corners'
     return 1
   endif
 
   let l:cur_box_ind = s:in_box(l:corners, [l:cp[0]-l:start+1, l:cp[1]-a:live])
   if l:cur_box_ind == -1
-    echoerr 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
+    echohl 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
     return 1
   endif
   let l:cur_box = l:corners[l:cur_box_ind]
@@ -118,9 +128,9 @@ function! boxcar#box#resize(y, x, live)
   " get potentially affected boxes and premove required lines
   call s:fix_lines(l:corners, l:start, 
         \ [l:cur_box[0][0]+l:start, l:cp[1]],
-        \ (l:cur_box[2][0] - l:cur_box[0][0] + 1), a:x)
+        \ (l:cur_box[2][0] - l:cur_box[0][0] + 1), l:X)
 
-  call s:increment(l:block, l:start, l:end, l:cp, l:cur_box, a:y, a:x, a:live)
+  call s:increment(l:block, l:start, l:end, l:cp, l:cur_box, l:y, l:X, a:live)
 endfunction
 
 
@@ -129,8 +139,8 @@ endfunction
 function s:increment(block, start, end, cp, box, y, x, live)
 
   " set box elements
-  let l:border_x = repeat('━', a:x)
-  let l:blank_x = repeat(' ', a:x)
+  let l:border_x = repeat('━', l:X)
+  let l:blank_x = repeat(' ', l:X)
 
   " set constants
   let l:box_start_y = a:start + a:box[0][0] 
@@ -172,7 +182,7 @@ function s:increment(block, start, end, cp, box, y, x, live)
   " add y values 
   let l:i = a:cp[0]
   let l:end = a:end
-  let l:stop = l:i + a:y
+  let l:stop = l:i + l:y
   while l:i < l:stop
     " add newlines if at block end
     if l:i == l:end
@@ -293,11 +303,11 @@ endfunction
 function s:in_box(boxes, cp)
 
   let l:y = a:cp[0]-1
-  let l:x = a:cp[1]-1
+  let l:X = a:cp[1]-1
   let l:i = 0
   for b in a:boxes
     if l:y > b[0][0] && l:y < b[2][0]
-          \ && l:x > b[0][1] && l:x < b[1][1]
+          \ && l:X > b[0][1] && l:X < b[1][1]
       return l:i
     endif
     let l:i += 1
