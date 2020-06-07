@@ -1,0 +1,9 @@
+~ Test get_corners
+
+Given (an empty code-block):
+  ```
+
+  ```
+
+Execute (get_corners):
+  call boxcar#get#corners()

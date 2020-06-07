@@ -1,0 +1,44 @@
+~ Test get_tls
+
+==================================================
+
+Given (an empty code-block):
+  ```
+       
+  ```
+
+Execute (get_tls, and assert an empty list):
+  let block = boxcar#block#get(2, '```')[2]
+  let tls = boxcar#get#tls(block)
+  AssertEqual [], tls
+
+
+==================================================
+
+Given (a code-block with random text and some tl corers):
+  ```
+  stuff        ┏
+     ┏  ┏
+  ```
+
+Execute (get_tls, and assert a list containing 3 lists):
+  let block = boxcar#block#get(2, '```')[2]
+  let tls = boxcar#get#tls(block)
+  AssertEqual [[1, 13], [2, 3], [2, 6]], tls
+
+
+==================================================
+
+Given (a code-block with three boxes and a random corner):
+  ```
+     ┏━┓    ┏
+  ┏━┓┃a┃   ┓
+  ┃b┃┗━┛ ┏━┓ 
+  ┗━┛    ┃ ┃ text
+         ┗━┛
+  ```
+
+Execute (get_tls, and assert a list containing 3 lists):
+  let block = boxcar#block#get(2, '```')[2]
+  let tls = boxcar#get#tls(block)
+  AssertEqual [[1, 3], [1, 10], [2, 0], [3, 7]], tls
