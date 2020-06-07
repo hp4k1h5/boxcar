@@ -5,7 +5,6 @@
 " inserted char. The y and x values are added from the cursor's current
 " position. currently only works with positive numbers.
 function! boxcar#resize#box(y, x, live)
-  echohl 'wow'
 
   if a:y < 0 || a:x < 0 || a:live < 0 || a:live > 1
     throw 'bad arguments supplied please see docs'
@@ -38,9 +37,8 @@ function! boxcar#resize#box(y, x, live)
         \ [cur_box[0][0]+start, cp[1]],
         \ (cur_box[2][0] - cur_box[0][0] + 1), a:x)
 
-  echom 'incring'
   call s:increment(block, start, end, cp, cur_box, a:y, a:x, a:live)
-  echom 'inced'
+
 endfunction
 
 

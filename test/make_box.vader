@@ -115,8 +115,8 @@ Given (a code block):
   
   ```
 
-Execute (call cursor in box):
-  call cursor(2, 4)
+Execute (make a 5x5 box):
+  call cursor(2, 3)
   call boxcar#make#box(5, 5)
 
 Expect (a 5x5 box):

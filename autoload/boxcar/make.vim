@@ -81,8 +81,10 @@ function! boxcar#make#box(...)
     let i += 1
   endfor
 
-  " put cursor in box
-  call cursor(row+1, col+1)
+  echom getcurpos()
+  " put cursor in box (3 for the three unicodechars in ┃
+  call cursor(row+1, col+3)
+  echom getcurpos()
 
   " resize if necessary
   if y > 3 || x > 3

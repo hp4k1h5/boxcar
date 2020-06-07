@@ -15,7 +15,7 @@ Given (boxes a and b):
 
 Execute (put cursor in box a and inc by 3 5):
   call cursor(3,10)
-  call boxcar#box#resize(3, 5, 0)
+  call boxcar#resize#box(3, 5, 0)
 
 Expect (a bigger a):
   ```
