@@ -1,0 +1,81 @@
+~ Test make_box 3
+
+=====================================
+
+Given (boxes y z):
+  ```
+     ┏━┓
+  ┏━┓┃z┃
+  ┃y┃┗━┛
+  ┗━┛
+  ```
+
+Execute (call cursor so new box will be inline with z):
+  call cursor(2, 4)
+  call boxcar#box#make()
+
+Expect (a box between y and z):
+  ```
+     ┏━┓┏━┓
+  ┏━┓┃ ┃┃z┃
+  ┃y┃┗━┛┗━┛
+  ┗━┛
+  ```
+
+
+=====================================
+
+Given (boxes a b and a newline before):
+  ```
+      
+     ┏━┓
+  ┏━┓┃b┃
+  ┃a┃┗━┛
+  ┗━┛
+  ```
+
+Execute (call cursor so new box will above and between a and b):
+  call cursor(2, 4)
+  call boxcar#box#make()
+
+Expect (a box between a and b):
+  ```
+     ┏━┓ 
+     ┃ ┃┏━┓
+  ┏━┓┗━┛┃b┃
+  ┃a┃   ┗━┛
+  ┗━┛
+  ```
+
+
+=====================================
+
+
+Given (boxes a b and 3 newline before):
+  ```
+    
+
+  
+     ┏━┓
+  ┏━┓┃z┃
+  ┃y┃┗━┛
+  ┗━┛
+  ```
+
+Execute (call cursor so new box will above y and z):
+  call cursor(2, 2)
+  call boxcar#box#make()
+
+Expect (a box above y and z, and y):
+  ```
+   ┏━┓ 
+   ┃ ┃
+   ┗━┛
+     ┏━┓
+  ┏━┓┃z┃
+  ┃y┃┗━┛
+  ┗━┛
+  ```
+
+
+=====================================

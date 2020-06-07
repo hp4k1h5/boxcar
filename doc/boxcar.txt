@@ -1,0 +1,72 @@
+*boxcar.txt*	boxes around text in vim
+HP4k1h5 <robertwalks@gmail.com>                                       *boxcar*
+
+==============================================================================
+CONTENTS                                                     *boxcar-contents*
+  1. Introduction...............................................|boxcar-intro|
+  2. Commands................................................|boxcar-commands|
+  3. Functions..............................................|boxcar-functions|
+
+==============================================================================
+INTRODUCTION                                                    *boxcar-intro*
+
+boxcar is a plugin for creating unicode boxes. All boxcar operations are
+assumed to take place inside of a markdown code-fence. The basic operations of
+this plugin include creating and resizing boxes. While more functionality is
+being added, try to keep in mind two vim commands that will help a lot: 1)
+Replace mode, i.e. type 'R' in normal mode, and 2) <Ctrl-v>, which can perform
+box-like cut and paste.
+
+For some examples see vader test files.
+
+==============================================================================
+COMMANDS                                                     *boxcar-commands*
+
+:BoxcarOn                                                          *:BoxcarOn*
+  Enables auto-grow as you type inside a box. Call 'BoxcarOff' to disable   !
+  hitting enter will not work as expected
+
+:BoxcarOff                                                        *:BoxcarOff*
+  BoxcarOff disables auto-grow as you type mode.
+
+:BoxcarMake                                                      *:BoxcarMake*
+  Create a new 3x3 box whose top-left corner is under the cursor
+
+:BoxcarResize {y} {x}                                          *:BoxcarResize*
+  Resize a box underneath the cursor by {y} lines and {x} cols. Cursor must be
+  fully inside, i.e. not on a border.
+
+  Ex: BoxcarResize 4 3
+
+  resizes the box under the cursor by 4 lines and 3 columns
+
+==============================================================================
+FUNCTIONS                                                   *boxcar-functions*
+
+boxcar#block#get({line_nr}, {markers})                    *boxcar#block#get()*
+  Get start and end lines of the code-block surrounding {line_nr}. Code block
+  is composed of lines inside of a code-fence, composed of two {markers}.
+  Default marker is the standard markdown ``` three backticks. Cursor must be
+  **between** code-block markers, not on either. Throws if not inside.
+
+boxcar#box#make()                                          *boxcar#box#make()*
+  Create a 3x3 unicode box, putting the top-left corner under the cursor's
+  current position. If BoxcarOn is enabled the cursor will be placed inside
+  the box. Ex:
+>
+    ```                          ```
+    █ <━━━━┓                     ┏━┓
+    ```    ┃              ┏━━━>  ┃█┃   cursor is inside box
+    with cursor here      ┃      ┗━┛
+     call :BoxcarMake ━━━━┛      ```
+<
+  Must be called inside a code-fence; see |boxcar#block#get()|.
+
+boxcar#box#resize({y}, {x}, {live})                      *boxcar#box#resize()*
+  Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
+  true, the line under edit will not be padded out, to accomodate the newly
+  inserted char. The y and x values are added from the cursor's current
+  position. currently only works with positive numbers.
+
+
+vim:tw=78:ts=8:ft=help:norl:

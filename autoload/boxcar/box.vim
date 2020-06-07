@@ -1,87 +1,156 @@
-" TODO add syntax ```boxcar that allows user to input a syntax to create boxes
-" at compile time as opposed to dynamically as they type.
-" i.e. 
-" ```boxcar
-" @s='a string inside a box'
-" @t=header-title-and-the-text-comes-too
-" #0x0[@t]t
-" #10x0[@v]a
-" #10x0[@v]b
-" b->a
-" -------
-"  t
-"       a
-"
-"  b
-" -------
-" ```
-" would produce a box 10 chars wide with the text fitted inside.
-" if the shortest word was too long, it would error dynamically but compile to
-" a best fit approximation
-
 ""
-" does this register ?
-function! boxcar#box#make()abort
+" @public
+" Create a 3x3 unicode box, putting the top-left corner under the cursor's
+" current position. If BoxcarOn is enabled the cursor will be placed inside
+" the box.
+" Ex: 
+" >
+"   ```                          ```
+"   █ <━━━━┓                     ┏━┓ 
+"   ```    ┃              ┏━━━>  ┃█┃   cursor is inside box
+"   with cursor here      ┃      ┗━┛
+"    call :BoxcarMake ━━━━┛      ```
+" <
+" Must be called inside a code-fence; see @function(boxcar#block#get).
+function! boxcar#box#make()
+
+  " get code-block
   let l:cp = getcurpos()
+  let l:line_nr = l:cp[1]
+  let l:col = l:cp[4]
   try
-    let [l:start, l:end, l:block] = boxcar#block#get(l:cp, '```')
+    let [l:start, l:end, l:block] = boxcar#block#get(l:line_nr, '```')
   catch
     echoerr v:exception
     return 1
   endtry
 
-  call append(l:cp[1]-1, ['┏━┓','┃ ┃','┗━┛'])
-  " these numbers seem off
-  call cursor(l:cp[1]+1, 4)
-  " insert mode
-  execute 'normal! a'
-endfunction
-
-function! boxcar#box#resize(y, x, live)
-  try
-    let [l:start, l:end, l:block] = boxcar#block#get(getcurpos(), '```')
-  catch
-    echoerr v:exception
-    return 1
-  endtry
-
+  " get other boxes
   try
     let l:corners = s:get_corners(l:block)
-    let l:cur_box_ind = s:in_box(l:corners)
   catch
     echoerr v:exception.'::'.v:throwpoint
     return 1
   endtry
 
-  let l:keypress = getchar(0)
-  call boxcar#box#inc(l:block, l:start, l:end, l:corners[l:cur_box_ind], a:y, a:x, a:live)
+  " if in a box throw
+  let l:cur_box_ind = s:in_box(l:corners, [l:line_nr, l:col])
+  if l:cur_box_ind != -1
+    echoerr 'cannot put box in box'
+    return 1
+  endif
+
+  " get potentially affected boxes and premove required lines
+  call s:fix_lines(l:corners, l:start, [l:line_nr, l:col], 3, 3)
+
+  " add new box
+  let l:box_components =  ['┏━┓','┃ ┃','┗━┛']
+  let l:i = l:line_nr
+  for b in l:box_components
+
+    " add extra line if necessary
+    if l:i == l:end
+      call append(l:i-1, repeat(' ', l:col-1))
+      " end moves down
+      let l:end += 1
+    " add extra width to line if necessary
+    else
+      let l:l = getline(l:i)
+      call setline(l:i, l:l
+            \ .repeat(' ', (l:col-1) - strchars(l:l)))
+    endif
+
+    " add box components
+    call setline(l:i, join(extend(
+          \ split(getline(l:i), '\zs'), 
+          \ split(b, '\zs'),
+          \ l:col - 1
+          \ ), ''))
+
+    " next line
+    let l:i += 1
+  endfor
+
+  " put cursor on box
+  call cursor(l:line_nr+1, l:col+2)
+
+  " TODO resize if necessary
+
+  " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert
+  " execute 'normal! a'
 endfunction
 
-function! boxcar#box#inc(block, start, end, box, y, x, live)
-  let l:cp = getpos('.')
+
+""
+" @public
+" Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
+" true, the line under edit will not be padded out, to accomodate the newly
+" inserted char. The y and x values are added from the cursor's current
+" position. currently only works with positive numbers.
+function! boxcar#box#resize(y, x, live)
+
+  if a:y < 0 || a:x < 0 || a:live < 0 || a:live > 1
+    throw 'bad arguments supplied please see docs'
+  endif
+
+  let l:cp = getcurpos()
+  let l:cp = [l:cp[1], l:cp[4]]
+  try
+    let [l:start, l:end, l:block] = boxcar#block#get(l:cp[0], '```')
+  catch
+    echoerr join(v:exception, '::')
+    return 1
+  endtry
+
+  let l:corners = s:get_corners(l:block)
+  if ! len(l:corners)
+    echoerr 'no top-left corners'
+    return 1
+  endif
+
+  let l:cur_box_ind = s:in_box(l:corners, [l:cp[0]-l:start+1, l:cp[1]-a:live])
+  if l:cur_box_ind == -1
+    echoerr 'cursor y'.l:cp[0].':x'.l:cp[1].'not in box'
+    return 1
+  endif
+  let l:cur_box = l:corners[l:cur_box_ind]
+
+  " get potentially affected boxes and premove required lines
+  call s:fix_lines(l:corners, l:start, 
+        \ [l:cur_box[0][0]+l:start, l:cp[1]],
+        \ (l:cur_box[2][0] - l:cur_box[0][0] + 1), a:x)
+
+  call s:increment(l:block, l:start, l:end, l:cp, l:cur_box, a:y, a:x, a:live)
+endfunction
+
+
+" add empty rows {y} and columns {x} to a {box} beginning at cursor
+" location {cp}. If {live} is true, skip line extension for cp[1].
+function s:increment(block, start, end, cp, box, y, x, live)
+
+  " set box elements
   let l:border_x = repeat('━', a:x)
   let l:blank_x = repeat(' ', a:x)
-  let l:newline = repeat(' ', a:box[0][1]).'┃'. 
-        \ repeat(' ', a:box[1][1] - (a:box[0][1] + 1) + a:x).'┃'
 
+  " set constants
   let l:box_start_y = a:start + a:box[0][0] 
   let l:box_end_y = a:start + a:box[2][0]
   let l:box_end_x = a:box[1][1]
 
-  " extend top border, off by is from array-to-page mapping
+  " extend top border
   call setline(l:box_start_y,
         \ join(extend( 
         \ split(a:block[a:box[0][0]], '\zs'), 
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
-  " extend content area
+  " extend content area, off-by is from array-to-page mapping. Skip extension
+  " when typing live, as character input will extend line by itself 
   let l:i = l:box_start_y + 1
   for l in a:block[a:box[0][0]+1: a:box[2][0]]
-    call setline(l:i,
-        \ join(extend( 
+    call setline(l:i, join(extend( 
         \ split(l, '\zs'), 
-        \ l:i == l:cp[1] && a:live ? [''] : split(l:blank_x, '\zs'), 
+        \ l:i == a:cp[0] && a:live ? [''] : split(l:blank_x, '\zs'), 
         \ l:box_end_x), ''))
     " next line
     let l:i += 1
@@ -94,27 +163,51 @@ function! boxcar#box#inc(block, start, end, box, y, x, live)
         \ split(l:border_x, '\zs'), 
         \ l:box_end_x), ''))
 
-  let l:i = a:y
-  while l:i
-    call append(getcurpos()[1], l:newline)
-    " next newline
-    let l:i -= 1
+  " reevaluate block and boxes after extending right
+  let [l:start, l:end, l:block] = boxcar#block#get(a:cp[0], '```')
+  let l:corners = s:get_corners(l:block)
+  let l:cur_box_ind = s:in_box(l:corners, [a:cp[0]-a:start+1, a:cp[1]-a:live])
+  let l:box = l:corners[l:cur_box_ind]
+
+  " add y values 
+  let l:i = a:cp[0]
+  let l:end = a:end
+  let l:stop = l:i + a:y
+  while l:i < l:stop
+    " add newlines if at block end
+    if l:i == l:end
+      call append(l:i - 1, repeat(' ', l:box[0][1] + 1))
+      let l:end += 1
+    endif
+    let l:rep_start = l:box[0][1] > 0
+          \ ? join(split(l:block[l:i - a:start], '\zs')[:l:box[0][1]], '')
+          \ : '' 
+    let l:rep_end = join(split(l:block[l:i - a:start], '\zs')[l:box[1][1] + 1:], '')
+    call append(l:i-1, 
+          \ l:rep_start.'┃'
+          \ .repeat(' ', l:box[1][1] - l:box[0][1] - 1)
+          \ .'┃'.l:rep_end)
+
+    let l:i += 1
   endwhile
 endfunction
 
 
-function! box#dec(box, y, x)
+" remove rows {y} and columns {x} from {box}
+function! s:decrement(box, y, x)
 endfunction
 
 
-" get box corners
+" Returns a list of box corners inside {block}. Each returned box has 4
+" corners in the following order [tl, tr, bl, br]. Each corner is a list of
+" [y, x] zero-indexed pairs, relative to the {block}, not the page.
 function s:get_corners(block)
   let l:corners = []
   let l:i = 0
 
   let l:tls = s:get_tls(a:block)
   if ! len(l:tls)
-    throw 'no top-left corners'
+    return l:tls
   endif
 
   " iterate over corners and check each for full box
@@ -175,7 +268,8 @@ function s:get_corners(block)
   return l:corners
 endfunction
 
-" returns [y,x] coordinate pairs of all top-left corners in {block}
+
+" Returns a list of [y, x] coordinate pairs of all top-left corners in {block}
 function s:get_tls(block)
   let l:tls = []
   let l:li = 0
@@ -193,21 +287,67 @@ function s:get_tls(block)
   return l:tls
 endfunction
 
-" returns the index of the {boxes} list the cursor is in or -1 if the cursor
-" is not inside one
-function s:in_box(boxes)
 
-  let l:cp = getcurpos()
-  let l:y = l:cp[1]-1
-  let l:x = l:cp[4]-1
+" Returns the index of the box in {boxes} that the cursor is in, or -1 if the
+" cursor is not inside a box
+function s:in_box(boxes, cp)
+
+  let l:y = a:cp[0]-1
+  let l:x = a:cp[1]-1
   let l:i = 0
   for b in a:boxes
-    if l:y > b[0][0] && l:y < b[3][0]
+    if l:y > b[0][0] && l:y < b[2][0]
           \ && l:x > b[0][1] && l:x < b[1][1]
       return l:i
     endif
     let l:i += 1
   endfor
 
-  throw 'cursor '.l:y.':'.l:x.'not in box'
+  return -1
 endfunction
+
+
+" Corrects lines in {boxes} that intersect with horizontal lines on the x axis
+" between 
+function s:fix_lines(boxes, start, cp, y, x)
+
+  let l:lines_to_fix = {}
+  " get set of lines affected by operation, mapped to block
+  let l:b_set = range(a:cp[0] - a:start, a:cp[0] + a:y  - a:start-1)
+
+  for b in a:boxes
+
+    " skip left boxes and down boxes
+    if b[0][1] < a:cp[1] - 1 ||
+          \ b[0][0] > a:cp[0] - a:start + a:y
+      continue
+    endif
+
+    " get set of lines a box touches
+    let l:a_set = range(b[0][0], b[2][0])
+    " find boxes that touch
+    for a in l:a_set
+      if match(l:b_set, a) > -1
+        " find lines that don't
+        for aa in l:a_set
+          if match(l:b_set, aa) == -1
+            let l:lines_to_fix[a:start + aa] = 1
+          endif
+        endfor
+        " next box
+        break
+      endif
+    endfor
+  endfor
+
+  " fix lines that not otherwise moved by operation
+  for k in keys(l:lines_to_fix)
+    call setline(k, join(extend(
+          \ split(getline(k), '\zs'),
+          \ repeat([' '], a:x), a:cp[1]-1), ''))
+  endfor
+endfunction
+
+" function s:fix_cols(boxes, start, fix_start, fix_end, line, n)
+"   let l:cols_to_fix
+" endfunction

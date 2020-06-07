@@ -1,0 +1,33 @@
+~ Test inc 2
+
+=============================
+
+Given (boxes a and b):
+  ```
+        ┏━┓
+        ┃a┃
+        ┗━┛
+      ┏━━━━━━━━━┓
+      ┃ b       ┃
+      ┃         ┃
+      ┗━━━━━━━━━┛
+  ```
+
+Execute (put cursor in box a and inc by 3 5):
+  call cursor(3,10)
+  call boxcar#box#resize(3, 5, 0)
+
+Expect (a bigger a):
+  ```
+        ┏━━━━━━┓
+        ┃      ┃
+        ┃      ┃
+        ┃      ┃
+        ┃a     ┃
+        ┗━━━━━━┛
+      ┏━━━━━━━━━┓
+      ┃ b       ┃
+      ┃         ┃
+      ┗━━━━━━━━━┛
+  ```
+=============================

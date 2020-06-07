@@ -1,0 +1,117 @@
+" ~ Test inc_box 3
+
+
+=============================
+Given (two boxes side-by-side):
+  ```
+
+
+  ┏━┓
+  ┃a┃    ┏━━━━━━━━━┓
+  ┗━┛    ┃ bbb     ┃
+         ┃      bbb┃
+         ┗━━━━━━━━━┛
+
+  ```
+
+Execute (put cursor in first box and inc by more than 1):
+  call cursor(5,4)
+  call boxcar#box#resize(0, 9, 0)
+  " check that cursor has not moved
+  AssertEqual getpos('.'), [0,5,4,0]
+
+Expect (a bigger box in the right place):
+  ```
+
+
+  ┏━━━━━━━━━━┓
+  ┃a         ┃    ┏━━━━━━━━━┓
+  ┗━━━━━━━━━━┛    ┃ bbb     ┃
+                  ┃      bbb┃
+                  ┗━━━━━━━━━┛
+  
+  ```
+
+
+=============================
+
+Given (a set of blocks):
+  ```
+     ┏━┓   
+     ┃v┃   ┏━┓         
+  ┏━┓┗━┛┏━┓┃x┃┏━┓   
+  ┃u┃   ┃w┃┗━┛┃y┃┏━┓
+  ┗━┛   ┗━┛   ┗━┛┃z┃
+                 ┗━┛
+  ```
+
+Execute (put cursor in u and resize horizontally):
+  call cursor(5, 4)
+  call boxcar#box#resize(0, 1, 0)
+
+
+Expect (bigger u and the other boxes to be moved correctly):
+  ```
+      ┏━┓   
+      ┃v┃   ┏━┓         
+  ┏━━┓┗━┛┏━┓┃x┃┏━┓   
+  ┃u ┃   ┃w┃┗━┛┃y┃┏━┓
+  ┗━━┛   ┗━┛   ┗━┛┃z┃
+                  ┗━┛
+  ```
+
+
+=============================
+
+Given (a set of blocks):
+  ```
+     ┏━┓   
+     ┃v┃   ┏━┓         
+  ┏━┓┗━┛┏━┓┃x┃┏━┓   
+  ┃u┃   ┃w┃┗━┛┃y┃┏━┓
+  ┗━┛   ┗━┛   ┗━┛┃z┃
+                 ┗━┛
+  ```
+
+Execute (put cursor in x and resize horizontally):
+  call cursor(4, 31)
+  call boxcar#box#resize(0, 2, 0)
+
+
+Expect (bigger x and the other boxes to be moved correctly):
+  ```
+     ┏━┓   
+     ┃v┃   ┏━━━┓         
+  ┏━┓┗━┛┏━┓┃x  ┃┏━┓   
+  ┃u┃   ┃w┃┗━━━┛┃y┃┏━┓
+  ┗━┛   ┗━┛     ┗━┛┃z┃
+                   ┗━┛
+  ```
+
+
+=============================
+Given (two boxes side-by-side):
+  ```
+
+  ┏━┓
+  ┃a┃    ┏━━━━━━━━━┓
+  ┗━┛    ┃ bbb     ┃
+         ┃      bbb┃
+         ┗━━━━━━━━━┛
+
+  ```
+
+Execute (put cursor in first box and inc by more than 1):
+  call cursor(4,4)
+  call boxcar#box#resize(2, 4, 0)
+
+Expect (a bigger box in the right place):
+  ```
+
+  ┏━━━━━┓
+  ┃     ┃    ┏━━━━━━━━━┓
+  ┃     ┃    ┃ bbb     ┃
+  ┃a    ┃    ┃      bbb┃
+  ┗━━━━━┛    ┗━━━━━━━━━┛
+  
+  ```
