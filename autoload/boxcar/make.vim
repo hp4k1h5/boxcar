@@ -11,9 +11,9 @@
 "   with cursor here      ┃      ┗━┛
 "    call :BoxcarMake ━━━━┛      ```
 " <
-" If called without parameters, the defaults are 3 and 3, which area also the
+" If called without parameters, the defaults are 3 and 3, which are also the
 " minimum values for this function. If called with only
-" 1 parameter the default for the {x} will be 3. Must be called inside a
+" 1 parameter, the default for the {x} will be 3. Must be called inside a
 "   code-fence; see @function(boxcar#block#get).
 function! boxcar#make#box(...)
 
@@ -41,17 +41,20 @@ function! boxcar#make#box(...)
   endtry
 
   " if in a box throw
-  let cur_box_ind = s:in_box(corners, [row, col])
+  let cur_box_ind = boxcar#in#box(corners, [row, col])
   if cur_box_ind != -1
     echohl 'cannot put box in box'
     return 1
   endif
 
   " get potentially affected boxes and premove required lines
-  call s:fix_lines(corners, start, [row, col], 3, 3)
+  call boxcar#fix#lines(corners, start, [row, col], y, x)
 
   " add new box
-  let box_components =  ['┏━┓','┃ ┃','┗━┛']
+  let box_components = [ 
+        \ [ '┏', '━', '┓' ], 
+        \ [ '┃', ' ', '┃' ], 
+        \ [ '┗', '━', '┛' ] ] 
   let i = row
   for b in box_components
 
@@ -70,7 +73,7 @@ function! boxcar#make#box(...)
     " add box components
     call setline(i, join(extend(
           \ split(getline(i), '\zs'), 
-          \ split(b, '\zs'),
+          \ b,
           \ col - 1
           \ ), ''))
 
@@ -78,12 +81,12 @@ function! boxcar#make#box(...)
     let i += 1
   endfor
 
-  " put cursor on box
-  call cursor(row+1, col+2)
+  " put cursor in box
+  call cursor(row+1, col+1)
 
   " resize if necessary
   if y > 3 || x > 3
-    call boxcar#box#resize(y-3, x-3, 0)
+    call boxcar#resize#box(y-3, x-3, 0)
   endif
 
   " insert mode TODO only apply in choo-choo mode, make -> BoxcarOn -> insert

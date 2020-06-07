@@ -1,4 +1,4 @@
-~ Test make box 1
+~ Test make_box
 
 =====================================
 
@@ -105,4 +105,25 @@ Expect (a box to the right of left margin and to the left of the arrow):
        ┏━┓<-- leave 5 blank spaces
   a    ┃ ┃
   a    ┗━┛
+  ```
+
+
+=====================================
+
+Given (a code block):
+  ```
+  
+  ```
+
+Execute (call cursor in box):
+  call cursor(2, 4)
+  call boxcar#make#box(5, 5)
+
+Expect (a 5x5 box):
+  ```
+  ┏━━━┓
+  ┃   ┃
+  ┃   ┃
+  ┃   ┃
+  ┗━━━┛
   ```

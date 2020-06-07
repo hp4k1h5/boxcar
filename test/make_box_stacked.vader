@@ -12,7 +12,7 @@ Given (boxes y z):
 
 Execute (call cursor so new box will be inline with z):
   call cursor(2, 4)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box between y and z):
   ```
@@ -36,7 +36,7 @@ Given (boxes a b and a newline before):
 
 Execute (call cursor so new box will above and between a and b):
   call cursor(2, 4)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box between a and b):
   ```
@@ -64,7 +64,7 @@ Given (boxes a b and 3 newline before):
 
 Execute (call cursor so new box will above y and z):
   call cursor(2, 2)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box above y and z, and y):
   ```
