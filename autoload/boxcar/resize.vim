@@ -49,8 +49,8 @@ endfunction
 function s:increment(block, start, end, cp, box, y, x, live)
 
   " set box elements
-  let border_x = repeat('━', a:x)
-  let blank_x = repeat(' ', a:x)
+  let border_x = split(repeat('━', a:x), '\zs')
+  let blank_x = split(repeat(' ', a:x), '\zs')
 
   " set constants
   let box_start_y = a:start + a:box[0][0] 
@@ -61,7 +61,7 @@ function s:increment(block, start, end, cp, box, y, x, live)
   call setline(box_start_y,
         \ join(extend( 
         \ split(a:block[a:box[0][0]], '\zs'), 
-        \ split(border_x, '\zs'), 
+        \ border_x,
         \ box_end_x), ''))
 
   " extend content area, off-by is from array-to-page mapping. Skip extension
@@ -70,17 +70,17 @@ function s:increment(block, start, end, cp, box, y, x, live)
   for l in a:block[a:box[0][0]+1: a:box[2][0]]
     call setline(i, join(extend( 
         \ split(l, '\zs'), 
-        \ i == a:cp[0] && a:live ? [''] : split(blank_x, '\zs'), 
+        \ i == a:cp[0] && a:live ? [''] : blank_x,
         \ box_end_x), ''))
     " next line
     let i += 1
   endfor
 
-  " set bottom border
+  " extend bottom border
   call setline(box_end_y,
         \ join(extend( 
         \ split(a:block[a:box[2][0]], '\zs'), 
-        \ split(border_x, '\zs'), 
+        \ border_x,
         \ box_end_x), ''))
 
   " reevaluate block and boxes after extending right
@@ -100,7 +100,7 @@ function s:increment(block, start, end, cp, box, y, x, live)
       let end += 1
     endif
     let rep_start = box[0][1] > 0
-          \ ? join(split(block[i - a:start], '\zs')[:box[0][1]], '')
+          \ ? join(split(block[i - a:start], '\zs')[:box[0][1]-1], '')
           \ : '' 
     let rep_end = join(split(block[i - a:start], '\zs')[box[1][1] + 1:], '')
     call append(i-1, 
