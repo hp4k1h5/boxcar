@@ -36,7 +36,7 @@ command -nargs=0 BoxcarOff call boxcar#off()
 
 ""
 " Create a new 3x3 box whose top-left corner is under the cursor
-command -nargs=* BoxcarMake call boxcar#box#make(<f-args>)
+command -nargs=* BoxcarMake call boxcar#make#box(<f-args>)
 
 ""
 " Resize a box underneath the cursor by {y} lines and {x} cols. Cursor must be
@@ -45,10 +45,10 @@ command -nargs=* BoxcarMake call boxcar#box#make(<f-args>)
 " Ex: BoxcarResize 4 3 
 "
 " resizes the box under the cursor by 4 lines and 3 columns
-command -nargs=* BoxcarResize call boxcar#box#resize(<f-args>, 0)
+command -nargs=* BoxcarResize call boxcar#resize#box(<f-args>, 0)
 
 function s:box_time()
-  call timer_start(0, {-> boxcar#box#resize(0,1,1)})
+  call timer_start(0, {-> boxcar#resize#box(0,1,1)})
 endfunction
 
 function! boxcar#on()
