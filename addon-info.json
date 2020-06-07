@@ -1,6 +1,6 @@
 {
   "name": "boxcar",
-  "version": "0.1",
+  "version": "v0.2",
   "description": "boxes around text in vim",
   "author": "HP4k1h5 <robertwalks@gmail.com>",
   "repository": {

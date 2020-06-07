@@ -4,12 +4,13 @@
 " File: plugin/boxcar.vim
 " Author: bob <robertwalks@gmail.com>
 " Last Change: 2020/06/03
-" Version: v0.0_1
+" Version: v0.2
 " Help: see README.md and doc/boxcar.txt
 " Thanks:
 " ChangeLog:
-"     0.0  : init (2020/05/10)
-"     0.0_1  : init (2020/06/03)
+"      v0.1  : improvements (2020/06/06)
+"    v0.0_1  : init (2020/06/03)
+"      v0.0  : init (2020/05/10)
 
 ""
 " @section Introduction, intro
