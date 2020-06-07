@@ -1,9 +1,52 @@
 ~ Test get_corners
 
+=================================================
+
 Given (an empty code-block):
   ```
 
   ```
 
 Execute (get_corners):
-  call boxcar#get#corners()
+  let block = boxcar#block#get(2, '```')
+  AssertEqual [], boxcar#get#corners(block[2])
+
+
+=================================================
+
+Given (a code block with a broken box):
+  ```
+
+     ┏━
+  ┏━┓┃a┃
+  ┃b┃┗━┛ ┏━┓ 
+  ┗━┛    ┃c┃
+         ┗━┛
+
+  ```
+
+Execute (get_corners and assert throw):
+  let block = boxcar#block#get(4, '```')[2]
+  AssertThrows boxcar#get#corners(block)
+  " AssertEqual g:vader_exception, ''
+
+
+=================================================
+
+Given (a code block with 3 boxes):
+  ```
+
+     ┏━┓
+  ┏━┓┃a┃
+  ┃b┃┗━┛ ┏━┓ 
+  ┗━┛    ┃c┃
+         ┗━┛
+
+  ```
+
+Execute (get_corners):
+  let block = boxcar#block#get(4, '```')[2]
+  let boxes = boxcar#get#corners(block)
+  AssertEqual [[[2, 3], [2, 5], [4, 3], [4, 5]], [[3, 0], [3, 2], [5, 0], [5, 2]], [[4, 7], [4, 9], [6, 7], [6, 9]]], boxes
+
+

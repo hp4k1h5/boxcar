@@ -1,0 +1,47 @@
+~ Test in_box
+
+=================================
+
+
+Given (a box against the left edge of the code-block):
+  ```
+    
+  ┏━┓
+  ┃ ┃
+  ┗━┛
+  ```
+
+Execute (mock cursor outside box):
+  let block = boxcar#block#get(2, '```')
+  let boxes = boxcar#get#corners(block[2])
+  AssertEqual -1, boxcar#in#box(boxes, [2, 2])
+
+Execute (mock cursor inside):
+  let block = boxcar#block#get(2, '```')
+  let boxes = boxcar#get#corners(block[2])
+  AssertEqual 0, boxcar#in#box(boxes, [4, 2])
+
+
+
+Given (multiple boxes):
+  ```
+                ┏━┓   ┏━┓
+  ┏━━━━┓ ┏━━━━┓ ┃d┃   ┃e┃
+  ┃ a  ┃ ┃ c  ┃ ┗━┛   ┗━┛
+  ┗━━━━┛ ┃ ┏┓ ┃    ┏━┓
+  ┏━━━━┓ ┃ ┗┛ ┃    ┃f┃
+  ┃ b  ┃ ┃    ┃ ┏━┓┗━┛ ┏━┓
+  ┗━━━━┛ ┗━━━━┛ ┃g┃    ┃h┃
+                ┗━┛    ┗━┛
+
+  ```
+
+Execute (mock cursor inside box b):
+  let block = boxcar#block#get(2, '```')
+  let boxes = boxcar#get#corners(block[2])
+  AssertEqual 9, len(boxes)
+  AssertEqual 6, boxcar#in#box(boxes, [7, 2])
+
+Execute (mock cursor inside box e):
+  AssertEqual 1, boxcar#in#box(boxes, [3, 22])
+  

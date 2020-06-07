@@ -205,25 +205,6 @@ function s:get_tls(block)
 endfunction
 
 
-" Returns the index of the box in {boxes} that the cursor is in, or -1 if the
-" cursor is not inside a box
-function s:in_box(boxes, cp)
-
-  let l:y = a:cp[0]-1
-  let l:X = a:cp[1]-1
-  let l:i = 0
-  for b in a:boxes
-    if l:y > b[0][0] && l:y < b[2][0]
-          \ && l:X > b[0][1] && l:X < b[1][1]
-      return l:i
-    endif
-    let l:i += 1
-  endfor
-
-  return -1
-endfunction
-
-
 " Corrects lines in {boxes} that intersect with horizontal lines on the x axis
 " between 
 function s:fix_lines(boxes, start, cp, y, x)

@@ -17,8 +17,9 @@ function! boxcar#get#corners(block)
   
     " find connected top-right or throw
     let l:ci = tl[1] + 1
+    let line = split(a:block[tl[0]], '\zs')[l:ci:]
     " iterate over chars in line from tl corner
-    for c in split(a:block[tl[0]], '\zs')[l:ci:]
+    for c in line
       if c ==# '┓'
         " add top-left and top-right to maybe_box
         call extend(l:maybe_box, [tl, [tl[0], l:ci]])
@@ -32,14 +33,15 @@ function! boxcar#get#corners(block)
 
     " find connected bottom-left or throw
     let l:blyi = tl[0] + 1
-    for l in a:block[l:blyi:]
+    let line = a:block[l:blyi:]
+    for l in line 
       let l:c = split(l, '\zs')[tl[1]]
       if l:c ==# '┗'
-        " add bottom-leftto maybe_box
+        " add bottom-left to maybe_box
         call add(l:maybe_box, [l:blyi, tl[1]])
         break
       elseif l:c !=# '┃'
-        throw 'disconnected bottom left: '.l:c.' .. y-index: '.l:blyi
+        throw 'disconnected bottom left: '.l:c
       endif
 
       " next line

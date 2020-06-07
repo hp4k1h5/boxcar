@@ -2,14 +2,14 @@
 
 =====================================
 
-Given (an empty code block):
+Given (an empty code block with only empty line):
   ```
   
   ```
 
 Execute (put cursor inside and make box):
   call cursor(2, 1)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box):
   ```
@@ -33,7 +33,7 @@ Given (an empty code block in middle of pages):
 
 Execute (put cursor inside and make box):
   call cursor(5, 1)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box in the middle):
 
@@ -56,7 +56,7 @@ Given (an empty code block with several lines):
 
 Execute (put cursor inside and make box):
   call cursor(3, 1)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box):
   ```
@@ -79,7 +79,7 @@ Given (an empty code block):
 
 Execute (put cursor on top fence and expect error state):
   call cursor(1, 1)
-  AssertThrows boxcar#box#make()
+  AssertThrows boxcar#make#box()
 
 Expect (no box):
   ```
@@ -98,7 +98,7 @@ Given (a code block with a cursor to the right):
 
 Execute (call cursor on top of <):
   call cursor(2, 6)
-  call boxcar#box#make()
+  call boxcar#make#box()
 
 Expect (a box to the right of left margin and to the left of the arrow):
   ```
