@@ -49,10 +49,10 @@ boxcar#block#get({line_nr}, {markers})                    *boxcar#block#get()*
   Default marker is the standard markdown ``` three backticks. Cursor must be
   **between** code-block markers, not on either. Throws if not inside.
 
-boxcar#box#make()                                          *boxcar#box#make()*
-  Create a 3x3 unicode box, putting the top-left corner under the cursor's
-  current position. If BoxcarOn is enabled the cursor will be placed inside
-  the box. Ex:
+boxcar#make#box({y}, {x})                                  *boxcar#make#box()*
+  Create a {y} by {x} unicode box, putting the top-left corner under the
+  cursor's current position. If BoxcarOn is enabled the cursor will be placed
+  inside the box. Ex:
 >
     ```                          ```
     █ <━━━━┓                     ┏━┓
@@ -60,9 +60,12 @@ boxcar#box#make()                                          *boxcar#box#make()*
     with cursor here      ┃      ┗━┛
      call :BoxcarMake ━━━━┛      ```
 <
-  Must be called inside a code-fence; see |boxcar#block#get()|.
+  If called without parameters, the defaults are 3 and 3, which are also the
+  minimum values for this function. If called with only 1 parameter, the
+  default for the {x} will be 3. Must be called inside a   code-fence; see
+  |boxcar#block#get()|.
 
-boxcar#box#resize({y}, {x}, {live})                      *boxcar#box#resize()*
+boxcar#resize#box({y}, {x}, {live})                      *boxcar#resize#box()*
   Resize the box the cursor is in by {y} rows and {x} columns. If {live} is
   true, the line under edit will not be padded out, to accomodate the newly
   inserted char. The y and x values are added from the cursor's current
